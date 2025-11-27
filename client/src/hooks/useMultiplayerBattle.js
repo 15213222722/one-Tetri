@@ -1,138 +1,83 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { TetrisGame } from '../game.js';
+import { useState, useEffect, useRef } from 'react';
+import { useGame } from './useGame.js';
 
 /**
  * Hook for managing multiplayer Tetris battle
- * Manages local game and syncs with opponent via WebSocket
+ * Uses the existing useGame hook for local gameplay
+ * Syncs state with opponent via WebSocket
  */
 export function useMultiplayerBattle(socket, roomData, opponentData) {
-  const [localGameState, setLocalGameState] = useState(null);
   const [opponentGameState, setOpponentGameState] = useState(null);
   const [isGameOver, setIsGameOver] = useState(false);
   const [winner, setWinner] = useState(null);
 
-  const localGameRef = useRef(null);
-  const animationFrameRef = useRef(null);
+  // Use room ID as seed so both players get same pieces
+  const gameSeed = roomData?.roomId;
+  
+  // Use the same game hook as solo mode
+  const localGame = useGame(gameSeed);
+  
+  const syncIntervalRef = useRef(null);
 
-  // Initialize local game
+  // Start the game when room is ready
   useEffect(() => {
-    if (!roomData) return;
+    if (!roomData || !localGame) return;
 
-    console.log('🎮 Initializing multiplayer battle', roomData);
-    
-    // Use room ID as seed to ensure both players have the same pieces
-    const gameSeed = roomData.roomId;
-    console.log('🎲 Using game seed:', gameSeed);
-    
-    // Create local game instance with shared seed
-    localGameRef.current = new TetrisGame(gameSeed);
-    localGameRef.current.start();
-    console.log('✅ Game started');
-
-    // Start game loop
-    const gameLoop = () => {
-      if (localGameRef.current && !isGameOver) {
-        const state = localGameRef.current.getState();
-        setLocalGameState(state);
-
-        // Check if local player lost
-        if (state.isGameOver && !isGameOver) {
-          handleGameOver(false); // Local player lost
-        }
-      }
-      animationFrameRef.current = requestAnimationFrame(gameLoop);
-    };
-
-    gameLoop();
+    console.log('🎮 Starting multiplayer battle with seed:', gameSeed);
+    localGame.startGame();
 
     return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-      if (localGameRef.current) {
-        localGameRef.current.pause();
+      if (syncIntervalRef.current) {
+        clearInterval(syncIntervalRef.current);
       }
     };
-  }, [roomData]);
+  }, [roomData, localGame, gameSeed]);
 
-  // Handle keyboard input
+  // Sync game state to opponent periodically
   useEffect(() => {
-    if (!localGameRef.current || isGameOver) return;
+    if (!socket || !roomData || !localGame.gameState) return;
 
-    const handleKeyDown = (e) => {
-      const game = localGameRef.current;
-      if (!game) return;
+    // Send state updates every 100ms
+    syncIntervalRef.current = setInterval(() => {
+      if (localGame.gameState && !localGame.gameState.isGameOver) {
+        socket.emit('game:state_update', {
+          roomId: roomData.roomId,
+          state: {
+            grid: localGame.gameState.grid,
+            score: localGame.gameState.score,
+            linesCleared: localGame.gameState.linesCleared,
+            level: localGame.gameState.level,
+            currentPiece: localGame.gameState.currentPiece,
+            nextQueue: localGame.gameState.nextQueue,
+            holdPiece: localGame.gameState.holdPiece,
+            piecesPlaced: localGame.gameState.piecesPlaced || 0,
+          },
+        });
+      }
+    }, 100);
 
-      console.log('🎮 Key pressed:', e.key);
-
-      switch (e.key) {
-        case 'ArrowLeft':
-          e.preventDefault();
-          game.moveLeft();
-          emitGameState();
-          break;
-        case 'ArrowRight':
-          e.preventDefault();
-          game.moveRight();
-          emitGameState();
-          break;
-        case 'ArrowDown':
-          e.preventDefault();
-          game.moveDown();
-          emitGameState();
-          break;
-        case 'ArrowUp':
-        case 'x':
-        case 'X':
-          e.preventDefault();
-          game.rotate();
-          emitGameState();
-          break;
-        case ' ':
-          e.preventDefault();
-          game.hardDrop();
-          emitGameState();
-          break;
-        case 'c':
-        case 'C':
-        case 'Shift':
-          e.preventDefault();
-          game.hold();
-          emitGameState();
-          break;
+    return () => {
+      if (syncIntervalRef.current) {
+        clearInterval(syncIntervalRef.current);
       }
     };
+  }, [socket, roomData, localGame.gameState]);
 
-    console.log('🎮 Keyboard listener attached');
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      console.log('🎮 Keyboard listener removed');
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isGameOver, socket, roomData]);
-
-  // Emit game state to opponent
-  const emitGameState = useCallback(() => {
-    if (!socket || !localGameRef.current || !roomData) {
-      console.warn('Cannot emit game state:', { socket: !!socket, game: !!localGameRef.current, roomData: !!roomData });
-      return;
+  // Check for game over
+  useEffect(() => {
+    if (localGame.gameState?.isGameOver && !isGameOver) {
+      console.log('😢 Local player lost!');
+      setIsGameOver(true);
+      setWinner('opponent');
+      
+      if (socket && roomData) {
+        socket.emit('game:over', {
+          roomId: roomData.roomId,
+          winner: 'opponent',
+        });
+      }
     }
-
-    const state = localGameRef.current.getState();
-    socket.emit('game:state_update', {
-      roomId: roomData.roomId,
-      state: {
-        grid: state.grid,
-        score: state.score,
-        linesCleared: state.linesCleared,
-        level: state.level,
-        currentPiece: state.currentPiece,
-        nextQueue: state.nextQueue,
-        holdPiece: state.holdPiece,
-        piecesPlaced: state.piecesPlaced || 0,
-      },
-    });
-  }, [socket, roomData]);
+  }, [localGame.gameState?.isGameOver, isGameOver, socket, roomData]);
 
   // Listen for opponent's game state
   useEffect(() => {
@@ -159,24 +104,11 @@ export function useMultiplayerBattle(socket, roomData, opponentData) {
     };
   }, [socket]);
 
-  // Handle game over
-  const handleGameOver = useCallback((didWin) => {
-    console.log('Game over called:', didWin);
-    setIsGameOver(true);
-    setWinner(didWin ? 'local' : 'opponent');
 
-    if (socket && roomData) {
-      socket.emit('game:over', {
-        roomId: roomData.roomId,
-        winner: didWin ? 'local' : 'opponent',
-      });
-    }
-
-    console.log(didWin ? '🎉 You won!' : '😢 You lost!');
-  }, [socket, roomData]);
 
   return {
-    localGameState,
+    localGame,
+    localGameState: localGame.gameState,
     opponentGameState,
     isGameOver,
     winner,
