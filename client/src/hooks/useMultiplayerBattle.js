@@ -53,7 +53,7 @@ export function useMultiplayerBattle(socket, roomData, opponentData) {
         localGameRef.current.pause();
       }
     };
-  }, [roomData, isGameOver]);
+  }, [roomData]);
 
   // Handle keyboard input
   useEffect(() => {
@@ -145,7 +145,8 @@ export function useMultiplayerBattle(socket, roomData, opponentData) {
 
     const handleOpponentGameOver = () => {
       console.log('🎉 Opponent lost!');
-      handleGameOver(true); // Opponent lost, local player wins
+      setIsGameOver(true);
+      setWinner('local');
     };
 
     console.log('📡 Listening for opponent updates');
@@ -156,10 +157,11 @@ export function useMultiplayerBattle(socket, roomData, opponentData) {
       socket.off('game:opponent_state', handleOpponentState);
       socket.off('game:opponent_game_over', handleOpponentGameOver);
     };
-  }, [socket, handleGameOver]);
+  }, [socket]);
 
   // Handle game over
   const handleGameOver = useCallback((didWin) => {
+    console.log('Game over called:', didWin);
     setIsGameOver(true);
     setWinner(didWin ? 'local' : 'opponent');
 
