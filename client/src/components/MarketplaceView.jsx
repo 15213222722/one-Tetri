@@ -119,13 +119,15 @@ export default function MarketplaceView({ onBack }) {
                     ← BACK
                 </button>
                 <h1>MARKETPLACE</h1>
-                <button 
-                    className="list-nft-button"
-                    onClick={() => setShowListModal(true)}
-                >
-                    LIST NFT
-                </button>
             </div>
+
+            {/* Floating List NFT Button */}
+            <button 
+                className="list-nft-button floating-button"
+                onClick={() => setShowListModal(true)}
+            >
+                + LIST NFT
+            </button>
 
             <div className="marketplace-content">
                 {error && (
