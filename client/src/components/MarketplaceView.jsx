@@ -44,14 +44,14 @@ export default function MarketplaceView({ onBack }) {
                 {
                     id: 'listing_1',
                     skinId: 1,
-                    price: 1000000000, // 1 SUI in MIST
+                    price: 1000, // 1000 TETRI tokens (no decimals)
                     seller: '0x1234...5678',
                     nftId: 'nft_1'
                 },
                 {
                     id: 'listing_2', 
                     skinId: 2,
-                    price: 5000000000, // 5 SUI in MIST
+                    price: 5000, // 5000 TETRI tokens (no decimals)
                     seller: '0x8765...4321',
                     nftId: 'nft_2'
                 }
@@ -80,8 +80,9 @@ export default function MarketplaceView({ onBack }) {
         if (!selectedNFT || !listPrice) return;
 
         try {
-            const priceInMist = parseFloat(listPrice) * 1000000000; // Convert SUI to MIST
-            await skinNFT.listSkinNFT(selectedNFT.id, priceInMist);
+            // TETRI tokens have 0 decimals, so price is already in the correct format
+            const priceInTetri = parseInt(listPrice);
+            await skinNFT.listSkinNFT(selectedNFT.id, priceInTetri);
             setShowListModal(false);
             setSelectedNFT(null);
             setListPrice('');
@@ -92,8 +93,9 @@ export default function MarketplaceView({ onBack }) {
         }
     };
 
-    const formatPrice = (priceInMist) => {
-        return (priceInMist / 1000000000).toFixed(2); // Convert MIST to SUI
+    const formatPrice = (priceInTetri) => {
+        // TETRI tokens have 0 decimals, so no conversion needed
+        return priceInTetri.toLocaleString();
     };
 
     if (loading) {
@@ -161,7 +163,7 @@ export default function MarketplaceView({ onBack }) {
                                         
                                         <div className="listing-details">
                                             <div className="price">
-                                                💰 {formatPrice(listing.price)} SUI
+                                                💰 {formatPrice(listing.price)} TETRI
                                             </div>
                                             <div className="seller">
                                                 👤 {listing.seller.slice(0, 6)}...{listing.seller.slice(-4)}
@@ -188,13 +190,13 @@ export default function MarketplaceView({ onBack }) {
                 <div className="modal-overlay" onClick={() => setShowListModal(false)}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                         <h2>List NFT for Sale</h2>
-                        <p>Enter the price in SUI for your NFT:</p>
+                        <p>Enter the price in TETRI tokens for your NFT:</p>
                         
                         <input
                             type="number"
-                            step="0.01"
-                            min="0.01"
-                            placeholder="Price in SUI (e.g., 1.5)"
+                            step="1"
+                            min="1"
+                            placeholder="Price in TETRI (e.g., 1000)"
                             value={listPrice}
                             onChange={(e) => setListPrice(e.target.value)}
                             className="price-input"

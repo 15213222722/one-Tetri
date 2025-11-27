@@ -116,7 +116,7 @@ export function useSkinNFT() {
     }, [account, signAndExecuteTransaction]);
 
     /**
-     * Buy skin NFT from marketplace
+     * Buy skin NFT from marketplace using TETRI tokens
      */
     const buySkinNFT = useCallback(async (listingId, price) => {
         if (!account) {
@@ -130,7 +130,13 @@ export function useSkinNFT() {
             const tx = new Transaction();
             tx.setSender(account.address);
 
-            // Split coin for payment
+            // Note: This will need to be updated to use actual TETRI token coins
+            // For now, using a placeholder - the smart contract will need to accept TETRI tokens
+            // TODO: Query user's TETRI token coins and use them for payment
+            // const tetriCoins = await client.getCoins({ owner: account.address, coinType: CONTRACT_CONFIG.token.type });
+            // const [paymentCoin] = tx.splitCoins(tx.object(tetriCoins.data[0].coinObjectId), [price]);
+            
+            // Placeholder: Using gas coin until TETRI token payment is fully implemented
             const [coin] = tx.splitCoins(tx.gas, [price]);
 
             tx.moveCall({

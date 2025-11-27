@@ -240,7 +240,8 @@
   - Test full flow: play → unlock → claim → customize → trade
   - _Requirements: All_
 
-- [-] 13. Final testing and bug fixes
+- [x] 13. Final testing and bug fixes
+
 
   - Test on testnet with real transactions
   - Verify NFTs appear in Sui wallet
