@@ -114,7 +114,7 @@ function BattleView({
             {/* NEXT */}
             <div className="next-container">
               <div className="preview-label">NEXT</div>
-              {localState.nextQueue.slice(0, 3).map((type, i) => (
+              {(localState.nextQueue || []).slice(0, 3).map((type, i) => (
                 <PiecePreview key={i} pieceType={type} />
               ))}
             </div>
@@ -180,7 +180,7 @@ function BattleView({
             {/* NEXT */}
             <div className="next-container">
               <div className="preview-label">NEXT</div>
-              {opponentState.nextQueue.slice(0, 3).map((type, i) => (
+              {(opponentState.nextQueue || []).slice(0, 3).map((type, i) => (
                 <PiecePreview key={i} pieceType={type} />
               ))}
             </div>
