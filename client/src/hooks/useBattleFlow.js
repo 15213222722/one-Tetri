@@ -90,8 +90,12 @@ export function useBattleFlow(socket) {
 
     // Matchmaking events
     const handleMatchmakingFound = (data) => {
+      console.log('🎮 Match found!', data);
       setOpponentData(data.opponent);
-      setRoomData({ wager: data.wager });
+      setRoomData({ 
+        roomId: data.roomId,
+        wager: data.wager 
+      });
       setBattleState('countdown');
       startCountdown();
     };
