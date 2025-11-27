@@ -145,10 +145,17 @@ export function useMultiplayerBattle(socket, roomData, opponentData) {
     console.log('📡 Setting up opponent state listeners, socket connected:', socket.connected);
 
     const handleOpponentState = (data) => {
-      console.log('📡 Received opponent state!', data?.state?.score);
       if (data && data.state) {
+        console.log('📡 Received opponent state:', {
+          score: data.state.score,
+          hasPiece: !!data.state.currentPiece,
+          pieceType: data.state.currentPiece?.type,
+          piecePos: data.state.currentPiece ? `(${data.state.currentPiece.x}, ${data.state.currentPiece.y})` : 'none',
+          hasGrid: !!data.state.grid,
+          gridSize: data.state.grid ? `${data.state.grid.length}x${data.state.grid[0]?.length}` : 'none'
+        });
         setOpponentGameState(data.state);
-        // No need to force re-render - React will automatically re-render when state changes
+        // React will automatically re-render when state changes
       } else {
         console.warn('📡 Received invalid opponent state:', data);
       }

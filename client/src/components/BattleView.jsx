@@ -1,6 +1,44 @@
+import { memo } from 'react';
 import GameBoard from './GameBoard.jsx';
 import PiecePreview from './PiecePreview.jsx';
 import './BattleView.css';
+
+// Memoized opponent game board to prevent unnecessary re-renders
+// Only re-renders when opponent's game state actually changes
+const OpponentGameBoard = memo(({ opponentState }) => {
+  console.log('🎮 OpponentGameBoard render - Score:', opponentState.score, 'Has piece:', !!opponentState.currentPiece);
+  
+  return (
+    <GameBoard 
+      grid={opponentState.grid}
+      currentPiece={opponentState.currentPiece}
+      ghostPiece={opponentState.ghostPiece}
+      isPaused={false}
+      clearingLines={opponentState.clearingLines || []}
+      isOpponent={true}
+    />
+  );
+}, (prevProps, nextProps) => {
+  // Custom comparison: only re-render if opponent state actually changed
+  const prev = prevProps.opponentState;
+  const next = nextProps.opponentState;
+  
+  // If either is null, compare by reference
+  if (!prev || !next) return prev === next;
+  
+  // Compare key fields that affect rendering
+  return (
+    prev.score === next.score &&
+    prev.linesCleared === next.linesCleared &&
+    prev.currentPiece?.type === next.currentPiece?.type &&
+    prev.currentPiece?.x === next.currentPiece?.x &&
+    prev.currentPiece?.y === next.currentPiece?.y &&
+    prev.currentPiece?.rotation === next.currentPiece?.rotation &&
+    JSON.stringify(prev.grid) === JSON.stringify(next.grid)
+  );
+});
+
+OpponentGameBoard.displayName = 'OpponentGameBoard';
 
 function BattleView({
   // Local player data
@@ -175,15 +213,8 @@ function BattleView({
               <PiecePreview pieceType={opponentState.holdPiece?.type} />
             </div>
 
-            {/* GAME BOARD */}
-            <GameBoard 
-              grid={opponentState.grid}
-              currentPiece={opponentState.currentPiece}
-              ghostPiece={opponentState.ghostPiece}
-              isPaused={false}
-              clearingLines={opponentState.clearingLines || []}
-              isOpponent={true}
-            />
+            {/* GAME BOARD - Memoized to prevent re-renders from local game loop */}
+            <OpponentGameBoard opponentState={opponentState} />
 
             {/* NEXT */}
             <div className="next-container">
