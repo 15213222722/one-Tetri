@@ -57,11 +57,24 @@ export function useMultiplayerBattle(socket, roomData, opponentData) {
   const gameStateRef = useRef(null);
   useEffect(() => {
     gameStateRef.current = localGame.gameState;
+    if (localGame.gameState && localGame.gameState.score !== undefined) {
+      console.log('🔄 Game state ref updated - Score:', localGame.gameState.score, 'Has grid:', !!localGame.gameState.grid);
+    }
   }, [localGame.gameState]);
 
   // Sync game state to opponent periodically
   useEffect(() => {
-    if (!socket || !roomData || !gameStartedRef.current) return;
+    console.log('🔍 Sync effect triggered:', { 
+      hasSocket: !!socket, 
+      hasRoomData: !!roomData, 
+      gameStarted: gameStartedRef.current,
+      socketConnected: socket?.connected 
+    });
+    
+    if (!socket || !roomData || !gameStartedRef.current) {
+      console.warn('⚠️ Sync interval NOT starting - missing requirements');
+      return;
+    }
 
     console.log('📡 Starting state sync interval');
 
