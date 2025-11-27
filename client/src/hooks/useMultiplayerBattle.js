@@ -18,27 +18,29 @@ export function useMultiplayerBattle(socket, roomData, opponentData) {
   const localGame = useGame(gameSeed);
   
   const syncIntervalRef = useRef(null);
+  const gameStartedRef = useRef(false);
 
-  // Start the game when room is ready
+  // Start the game when room is ready (only once)
   useEffect(() => {
-    if (!roomData || !localGame) return;
+    if (!roomData || !localGame || gameStartedRef.current) return;
 
     console.log('🎮 Starting multiplayer battle with seed:', gameSeed);
     localGame.startGame();
+    gameStartedRef.current = true;
 
     return () => {
       if (syncIntervalRef.current) {
         clearInterval(syncIntervalRef.current);
       }
     };
-  }, [roomData, localGame, gameSeed]);
+  }, [roomData]);
 
   // Sync game state to opponent periodically
   useEffect(() => {
-    if (!socket || !roomData || !localGame.gameState) return;
+    if (!socket || !roomData || !gameStartedRef.current) return;
 
     // Send state updates every 100ms
-    syncIntervalRef.current = setInterval(() => {
+    const interval = setInterval(() => {
       if (localGame.gameState && !localGame.gameState.isGameOver) {
         socket.emit('game:state_update', {
           roomId: roomData.roomId,
@@ -56,12 +58,12 @@ export function useMultiplayerBattle(socket, roomData, opponentData) {
       }
     }, 100);
 
+    syncIntervalRef.current = interval;
+
     return () => {
-      if (syncIntervalRef.current) {
-        clearInterval(syncIntervalRef.current);
-      }
+      clearInterval(interval);
     };
-  }, [socket, roomData, localGame.gameState]);
+  }, [socket, roomData]);
 
   // Check for game over
   useEffect(() => {
