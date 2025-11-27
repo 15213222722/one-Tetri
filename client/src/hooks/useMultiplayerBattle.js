@@ -76,61 +76,47 @@ export function useMultiplayerBattle(socket, roomData, opponentData) {
       return;
     }
 
-    console.log('📡 Starting state sync with requestAnimationFrame approach');
+    console.log('📡 Starting state sync interval');
 
     let updateCount = 0;
-    let lastSyncTime = 0;
-    const SYNC_INTERVAL = 200; // ms between syncs
-    let isActive = true;
-
-    const syncLoop = (timestamp) => {
-      if (!isActive) return;
-
-      // Only sync every SYNC_INTERVAL ms
-      if (timestamp - lastSyncTime >= SYNC_INTERVAL) {
-        console.log('⏰ Sync tick #' + updateCount);
-        const state = gameStateRef.current;
-        
-        if (updateCount === 0) {
-          console.log('📤 First sync attempt - State exists:', !!state, 'Socket:', !!socket, 'Room:', !!roomData);
-        }
+    
+    // Use setInterval with a longer delay to avoid conflicts
+    const syncInterval = setInterval(() => {
+      const state = gameStateRef.current;
+      
+      if (updateCount === 0) {
+        console.log('📤 First sync - State exists:', !!state);
+      }
+      
+      if (state && !state.isGameOver && !state.isPaused) {
+        socket.emit('game:state_update', {
+          roomId: roomData.roomId,
+          state: {
+            grid: state.grid,
+            score: state.score,
+            linesCleared: state.linesCleared,
+            level: state.level,
+            currentPiece: state.currentPiece,
+            nextQueue: state.nextQueue,
+            holdPiece: state.holdPiece,
+            piecesPlaced: state.piecesPlaced || 0,
+            ghostPiece: state.ghostPiece,
+          },
+        });
         
         updateCount++;
-        
-        if (state && !state.isGameOver && !state.isPaused) {
-          socket.emit('game:state_update', {
-            roomId: roomData.roomId,
-            state: {
-              grid: state.grid,
-              score: state.score,
-              linesCleared: state.linesCleared,
-              level: state.level,
-              currentPiece: state.currentPiece,
-              nextQueue: state.nextQueue,
-              holdPiece: state.holdPiece,
-              piecesPlaced: state.piecesPlaced || 0,
-              ghostPiece: state.ghostPiece,
-            },
-          });
-          if (updateCount % 10 === 0) {
-            console.log('📤 Sent state update #' + updateCount, 'Score:', state.score);
-          }
-        } else if (updateCount % 10 === 0) {
-          console.warn('📤 Cannot send state:', { hasState: !!state, isGameOver: state?.isGameOver, isPaused: state?.isPaused });
+        if (updateCount % 5 === 0) {
+          console.log('📤 Sent update #' + updateCount, 'Score:', state.score);
         }
-        
-        lastSyncTime = timestamp;
       }
+    }, 300); // 300ms interval - won't conflict with game loop
 
-      requestAnimationFrame(syncLoop);
-    };
-
-    requestAnimationFrame(syncLoop);
-    console.log('📡 Sync loop started with requestAnimationFrame');
+    syncIntervalRef.current = syncInterval;
+    console.log('📡 Sync interval started');
 
     return () => {
-      console.log('📡 Stopping sync loop');
-      isActive = false;
+      console.log('📡 Stopping sync interval');
+      clearInterval(syncInterval);
     };
   }, [socket, roomData]); // Removed localGame.gameState dependency to prevent restarts
 
