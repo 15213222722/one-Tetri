@@ -12,13 +12,31 @@ function BattleView({
   opponentGameState,
   
   // Battle data
-  wager,
-  battleTimer,
+  wager = 0,
+  battleTimer = 0,
   vsScore,
   
   // Callbacks
   onForfeit
 }) {
+  // Default game state if not provided
+  const defaultGameState = {
+    score: 0,
+    linesCleared: 0,
+    piecesPlaced: 0,
+    grid: Array(20).fill(null).map(() => Array(10).fill(null)),
+    currentPiece: null,
+    ghostPiece: null,
+    holdPiece: null,
+    nextQueue: [],
+    isPaused: false,
+    clearingLines: [],
+    renderTrigger: 0
+  };
+
+  const localState = localGameState || defaultGameState;
+  const opponentState = opponentGameState || defaultGameState;
+
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -57,20 +75,20 @@ function BattleView({
         {/* Local Player Side */}
         <div className="player-side local-player">
           <div className="player-info">
-            <div className="player-name">{localPlayer.username}</div>
+            <div className="player-name">{localPlayer?.username || 'Player'}</div>
             <div className="player-stats">
               <div className="stat">
                 <span className="stat-label">SCORE</span>
-                <span className="stat-value">{localGameState.score.toLocaleString()}</span>
+                <span className="stat-value">{localState.score.toLocaleString()}</span>
               </div>
               <div className="stat">
                 <span className="stat-label">LINES</span>
-                <span className="stat-value">{localGameState.linesCleared}</span>
+                <span className="stat-value">{localState.linesCleared}</span>
               </div>
               <div className="stat">
                 <span className="stat-label">PPS</span>
                 <span className="stat-value">
-                  {calculatePPS(localGameState.piecesPlaced || 0, battleTimer)}
+                  {calculatePPS(localState.piecesPlaced, battleTimer)}
                 </span>
               </div>
             </div>
@@ -80,23 +98,23 @@ function BattleView({
             {/* HOLD */}
             <div className="hold-container">
               <div className="preview-label">HOLD</div>
-              <PiecePreview pieceType={localGameState.holdPiece?.type} />
+              <PiecePreview pieceType={localState.holdPiece?.type} />
             </div>
 
             {/* GAME BOARD */}
             <GameBoard 
-              grid={localGameState.grid}
-              currentPiece={localGameState.currentPiece}
-              ghostPiece={localGameState.ghostPiece}
-              isPaused={localGameState.isPaused}
-              clearingLines={localGameState.clearingLines}
-              renderTrigger={localGameState.renderTrigger}
+              grid={localState.grid}
+              currentPiece={localState.currentPiece}
+              ghostPiece={localState.ghostPiece}
+              isPaused={localState.isPaused}
+              clearingLines={localState.clearingLines}
+              renderTrigger={localState.renderTrigger}
             />
 
             {/* NEXT */}
             <div className="next-container">
               <div className="preview-label">NEXT</div>
-              {localGameState.nextQueue && localGameState.nextQueue.slice(0, 3).map((type, i) => (
+              {localState.nextQueue.slice(0, 3).map((type, i) => (
                 <PiecePreview key={i} pieceType={type} />
               ))}
             </div>
@@ -108,12 +126,12 @@ function BattleView({
           <div className="vs-score">
             <div className="vs-label">VS</div>
             <div className="score-comparison">
-              <span className={localGameState.score > opponentGameState.score ? 'winning' : ''}>
-                {localGameState.score.toLocaleString()}
+              <span className={localState.score > opponentState.score ? 'winning' : ''}>
+                {localState.score.toLocaleString()}
               </span>
               <span className="vs-dash">-</span>
-              <span className={opponentGameState.score > localGameState.score ? 'winning' : ''}>
-                {opponentGameState.score.toLocaleString()}
+              <span className={opponentState.score > localState.score ? 'winning' : ''}>
+                {opponentState.score.toLocaleString()}
               </span>
             </div>
           </div>
@@ -122,20 +140,20 @@ function BattleView({
         {/* Opponent Side */}
         <div className="player-side opponent-player">
           <div className="player-info">
-            <div className="player-name">{opponentPlayer.username}</div>
+            <div className="player-name">{opponentPlayer?.username || 'Opponent'}</div>
             <div className="player-stats">
               <div className="stat">
                 <span className="stat-label">SCORE</span>
-                <span className="stat-value">{opponentGameState.score.toLocaleString()}</span>
+                <span className="stat-value">{opponentState.score.toLocaleString()}</span>
               </div>
               <div className="stat">
                 <span className="stat-label">LINES</span>
-                <span className="stat-value">{opponentGameState.linesCleared}</span>
+                <span className="stat-value">{opponentState.linesCleared}</span>
               </div>
               <div className="stat">
                 <span className="stat-label">PPS</span>
                 <span className="stat-value">
-                  {calculatePPS(opponentGameState.piecesPlaced || 0, battleTimer)}
+                  {calculatePPS(opponentState.piecesPlaced, battleTimer)}
                 </span>
               </div>
             </div>
@@ -145,24 +163,24 @@ function BattleView({
             {/* HOLD */}
             <div className="hold-container">
               <div className="preview-label">HOLD</div>
-              <PiecePreview pieceType={opponentGameState.holdPiece?.type} />
+              <PiecePreview pieceType={opponentState.holdPiece?.type} />
             </div>
 
             {/* GAME BOARD */}
             <GameBoard 
-              grid={opponentGameState.grid}
-              currentPiece={opponentGameState.currentPiece}
-              ghostPiece={opponentGameState.ghostPiece}
+              grid={opponentState.grid}
+              currentPiece={opponentState.currentPiece}
+              ghostPiece={opponentState.ghostPiece}
               isPaused={false}
-              clearingLines={opponentGameState.clearingLines}
-              renderTrigger={opponentGameState.renderTrigger}
+              clearingLines={opponentState.clearingLines}
+              renderTrigger={opponentState.renderTrigger}
               isOpponent={true}
             />
 
             {/* NEXT */}
             <div className="next-container">
               <div className="preview-label">NEXT</div>
-              {opponentGameState.nextQueue && opponentGameState.nextQueue.slice(0, 3).map((type, i) => (
+              {opponentState.nextQueue.slice(0, 3).map((type, i) => (
                 <PiecePreview key={i} pieceType={type} />
               ))}
             </div>
