@@ -63,6 +63,12 @@ export function useMultiplayerBattle(socket, roomData, opponentData) {
     let updateCount = 0;
     const interval = setInterval(() => {
       const state = localGame.gameState;
+      
+      // Debug: log state availability
+      if (updateCount === 0) {
+        console.log('📤 First sync attempt - State exists:', !!state, 'Socket:', !!socket, 'Room:', !!roomData);
+      }
+      
       if (state && !state.isGameOver && !state.isPaused) {
         socket.emit('game:state_update', {
           roomId: roomData.roomId,
@@ -82,6 +88,8 @@ export function useMultiplayerBattle(socket, roomData, opponentData) {
         if (updateCount % 20 === 0) { // Log every 20 updates (~3 seconds)
           console.log('📤 Sent state update #' + updateCount, 'Score:', state.score);
         }
+      } else if (updateCount % 20 === 0) {
+        console.warn('📤 Cannot send state:', { hasState: !!state, isGameOver: state?.isGameOver, isPaused: state?.isPaused });
       }
     }, 150);
 
