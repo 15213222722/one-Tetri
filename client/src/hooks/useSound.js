@@ -17,10 +17,8 @@ export function useSound() {
         bgmRef.current.loop = true;
         bgmRef.current.volume = 0.3; // 30% volume for BGM
 
-        // Create simple sound effects using Web Audio API
+        // Initialize hover sound (simple beep)
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        
-        // Hover sound effect (short beep)
         const createHoverSound = () => {
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
@@ -37,26 +35,43 @@ export function useSound() {
             oscillator.start(audioContext.currentTime);
             oscillator.stop(audioContext.currentTime + 0.1);
         };
+        hoverSoundRef.current = createHoverSound;
 
-        // Click sound effect (deeper beep)
+        // RETRO ARCADE CLICK - Like classic games!
         const createClickSound = () => {
-            const oscillator = audioContext.createOscillator();
+            // Create a classic "coin" or "select" sound
+            const osc1 = audioContext.createOscillator();
+            const osc2 = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
             
-            oscillator.connect(gainNode);
+            osc1.connect(gainNode);
+            osc2.connect(gainNode);
             gainNode.connect(audioContext.destination);
             
-            oscillator.frequency.value = 400;
-            oscillator.type = 'square';
+            // Classic arcade frequencies - perfect fifth interval
+            osc1.type = 'square'; // Retro square wave
+            osc2.type = 'square';
             
-            gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+            const now = audioContext.currentTime;
             
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.15);
+            // First note - high
+            osc1.frequency.setValueAtTime(1046.5, now); // C6
+            osc2.frequency.setValueAtTime(1568, now);   // G6
+            
+            // Quick pitch bend up for that arcade "bling"
+            osc1.frequency.exponentialRampToValueAtTime(1318.5, now + 0.05); // E6
+            osc2.frequency.exponentialRampToValueAtTime(1976, now + 0.05);   // B6
+            
+            // Volume envelope - quick and punchy
+            gainNode.gain.setValueAtTime(0, now);
+            gainNode.gain.linearRampToValueAtTime(0.4, now + 0.01); // Fast attack
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.15); // Quick decay
+            
+            osc1.start(now);
+            osc1.stop(now + 0.15);
+            osc2.start(now);
+            osc2.stop(now + 0.15);
         };
-
-        hoverSoundRef.current = createHoverSound;
         clickSoundRef.current = createClickSound;
 
         // Auto-play BGM when component mounts (with user interaction)

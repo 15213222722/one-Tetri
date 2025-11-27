@@ -214,14 +214,6 @@ function App() {
             {/* Landing Screen */}
             {currentScreen === 'landing' && (
                 <div className="landing-screen">
-                    <button 
-                        className="mute-button"
-                        onClick={sound.toggleMute}
-                        title={sound.isMuted ? 'Unmute' : 'Mute'}
-                    >
-                        {sound.isMuted ? '🔇' : '🔊'}
-                    </button>
-                    
                     <h1 className="game-title">TETRICHAIN</h1>
                     <p className="game-subtitle">WEB3 TETRIS ON SUI BLOCKCHAIN</p>
                     
@@ -241,6 +233,14 @@ function App() {
             {currentScreen === 'menu' && (
                 <div className="main-menu">
                     <h1 className="menu-title">TETRICHAIN</h1>
+                    
+                    {/* Mute Button - Simple style like back button */}
+                    <button 
+                        className="mute-toggle-button"
+                        onClick={sound.toggleMute}
+                    >
+                        {sound.isMuted ? '🔇 SOUND OFF' : '🔊 SOUND ON'}
+                    </button>
                     
                     <div className="menu-options">
                         <button 
