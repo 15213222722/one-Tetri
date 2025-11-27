@@ -20,14 +20,26 @@ import { useBattleFlow } from './hooks/useBattleFlow.js';
 import { useMultiplayerBattle } from './hooks/useMultiplayerBattle.js';
 import { useSkinUnlocks } from './hooks/useSkinUnlocks.js';
 import { useSound } from './hooks/useSound.js';
+import { getSkinById } from './skinConfig.js';
 import "./App.css";
+
+// Authentication states
+const AUTH_STATES = {
+    DISCONNECTED: 'disconnected',
+    CONNECTING: 'connecting',
+    VERIFYING: 'verifying',
+    REGISTERING: 'registering',
+    AUTHENTICATED: 'authenticated'
+};
 
 function App() {
     const [gameSeedObjectId, setGameSeedObjectId] = useState(null);
     const [gameSeed, setGameSeed] = useState(null);
-    const [currentScreen, setCurrentScreen] = useState('landing'); // landing, username, menu, solo, multiplayer, config, marketplace, customization
+    const [currentScreen, setCurrentScreen] = useState('landing'); // landing, menu, solo, multiplayer, config, marketplace, customization
     const [gameMode, setGameMode] = useState('menu'); // menu, playing, gameOver
     const [loadingMessage, setLoadingMessage] = useState('');
+    const [authState, setAuthState] = useState(AUTH_STATES.DISCONNECTED);
+    const [authMessage, setAuthMessage] = useState('');
     const [toast, setToast] = useState({ show: false, type: 'success', message: '' });
     const [showTutorial, setShowTutorial] = useState(false);
     const [selectedSkin, setSelectedSkin] = useState(() => {
@@ -51,31 +63,52 @@ function App() {
         battleFlow.opponentData
     );
     
-    // Handle wallet connection and username flow
+    // Handle wallet connection state transitions
     useEffect(() => {
-        if (blockchain.account && currentScreen === 'landing') {
-            // Wallet just connected, check if user has username
-            if (blockchain.isLoadingUsername) {
-                // Still checking for username, show loading
-                setLoadingMessage('Checking username registration...');
-            } else {
-                // Finished checking
-                setLoadingMessage('');
-                if (!blockchain.username) {
-                    // No username, show registration modal
-                    setCurrentScreen('username');
-                } else {
-                    // Has username, go to menu
-                    setCurrentScreen('menu');
-                }
+        if (!blockchain.account) {
+            // No wallet connected
+            if (authState !== AUTH_STATES.DISCONNECTED) {
+                setAuthState(AUTH_STATES.DISCONNECTED);
+                setAuthMessage('');
+                setCurrentScreen('landing');
+            }
+        } else {
+            // Wallet is connected
+            if (authState === AUTH_STATES.DISCONNECTED) {
+                // Just connected, start verification
+                setAuthState(AUTH_STATES.VERIFYING);
+                setAuthMessage('Checking username registration...');
             }
         }
-    }, [blockchain.account, blockchain.username, blockchain.isLoadingUsername, currentScreen]);
+    }, [blockchain.account, authState]);
+
+    // Handle username verification completion
+    useEffect(() => {
+        if (authState === AUTH_STATES.VERIFYING && !blockchain.isLoadingUsername) {
+            if (blockchain.username) {
+                // Username exists, authenticate
+                setAuthState(AUTH_STATES.AUTHENTICATED);
+                setAuthMessage('');
+            } else {
+                // No username, show registration
+                setAuthState(AUTH_STATES.REGISTERING);
+                setAuthMessage('');
+            }
+        }
+    }, [authState, blockchain.isLoadingUsername, blockchain.username]);
+
+    // Handle authentication completion
+    useEffect(() => {
+        if (authState === AUTH_STATES.AUTHENTICATED && currentScreen === 'landing') {
+            showToast('success', 'Authentication successful!');
+            setCurrentScreen('menu');
+        }
+    }, [authState, currentScreen]);
 
     // Handle successful username registration
     const handleUsernameRegistered = () => {
-        showToast('success', 'Username registered successfully!');
-        setCurrentScreen('menu');
+        setAuthState(AUTH_STATES.AUTHENTICATED);
+        showToast('success', 'Username registered! Authentication successful!');
     };
 
     // Show toast notification
@@ -376,7 +409,10 @@ function App() {
                                         {/* HOLD */}
                                         <div className="hold-container">
                                             <div className="preview-label">HOLD</div>
-                                            <PiecePreview pieceType={game.gameState.holdPiece?.type} />
+                                            <PiecePreview 
+                                                pieceType={game.gameState.holdPiece?.type}
+                                                skinColors={getSkinById(selectedSkin).colors}
+                                            />
                                             <div className="preview-hint">Press C</div>
                                         </div>
 
@@ -388,13 +424,18 @@ function App() {
                                             isPaused={game.gameState.isPaused}
                                             clearingLines={game.clearingLines}
                                             renderTrigger={game.renderTrigger}
+                                            skinColors={getSkinById(selectedSkin).colors}
                                         />
 
                                         {/* NEXT */}
                                         <div className="next-container">
                                             <div className="preview-label">NEXT</div>
                                             {game.gameState.nextQueue && game.gameState.nextQueue.slice(0, 4).map((type, i) => (
-                                                <PiecePreview key={i} pieceType={type} />
+                                                <PiecePreview 
+                                                    key={i} 
+                                                    pieceType={type}
+                                                    skinColors={getSkinById(selectedSkin).colors}
+                                                />
                                             ))}
                                         </div>
                                     </div>
@@ -485,7 +526,7 @@ function App() {
                 <CustomizationMenu
                     onBack={() => setCurrentScreen('menu')}
                     onSkinSelect={(skin) => {
-                        setSelectedSkin(skin);
+                        setSelectedSkin(skin.id);
                         console.log('Selected skin:', skin);
                     }}
                 />
@@ -499,7 +540,7 @@ function App() {
             )}
 
             {/* Username Registration Screen - Mandatory for first-time users */}
-            {currentScreen === 'username' && (
+            {authState === AUTH_STATES.REGISTERING && (
                 <div className="username-screen">
                     <UsernameRegistrationModal
                         isOpen={true}
@@ -519,8 +560,9 @@ function App() {
             )}
 
             {/* Loading Overlay */}
-            {(blockchain.isCreatingGameSeed || blockchain.isSubmittingScore || blockchain.isLoadingUsername) && (
-                <LoadingOverlay message={loadingMessage} />
+            {(blockchain.isCreatingGameSeed || blockchain.isSubmittingScore || 
+              authState === AUTH_STATES.VERIFYING) && (
+                <LoadingOverlay message={authState === AUTH_STATES.VERIFYING ? authMessage : loadingMessage} />
             )}
 
             {/* Toast Notifications */}

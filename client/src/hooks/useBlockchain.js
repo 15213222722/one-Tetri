@@ -1,5 +1,6 @@
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
+import { bcs } from '@mysten/sui/bcs';
 import { useState, useCallback, useEffect } from 'react';
 import { CONTRACT_CONFIG, TX_CONFIG } from '../config.js';
 
@@ -494,15 +495,23 @@ export const useBlockchain = () => {
             const tx = new Transaction();
             tx.setSender(account.address);
             
-            // Convert colors object to array of strings
-            const colorsArray = Object.values(skinColors);
+            // Convert colors object to array of strings in correct order (1-7)
+            const colorsArray = [
+                skinColors[1], // I piece
+                skinColors[2], // O piece
+                skinColors[3], // T piece
+                skinColors[4], // S piece
+                skinColors[5], // Z piece
+                skinColors[6], // J piece
+                skinColors[7], // L piece
+            ];
             
             tx.moveCall({
                 target: `${CONTRACT_CONFIG.packageId}::${CONTRACT_CONFIG.moduleName}::mint_skin`,
                 arguments: [
-                    tx.pure.string(skinName),
-                    tx.pure.u8(0), // rarity: 0=common (can be customized later)
-                    tx.pure.vector('string', colorsArray),
+                    tx.pure(bcs.string().serialize(skinName).toBytes()),
+                    tx.pure(bcs.u8().serialize(0).toBytes()),
+                    tx.pure(bcs.vector(bcs.string()).serialize(colorsArray).toBytes()),
                     tx.object(CONTRACT_CONFIG.clockId),
                 ],
             });

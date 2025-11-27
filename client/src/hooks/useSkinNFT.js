@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
-import { useCurrentAccount, useSignAndExecuteTransaction } from '@mysten/dapp-kit';
+import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
+import { bcs } from '@mysten/sui/bcs';
 import { CONTRACT_CONFIG, TX_CONFIG } from '../config.js';
 
 /**
@@ -9,13 +10,14 @@ import { CONTRACT_CONFIG, TX_CONFIG } from '../config.js';
 export function useSkinNFT() {
     const account = useCurrentAccount();
     const { mutate: signAndExecuteTransaction } = useSignAndExecuteTransaction();
+    const suiClient = useSuiClient();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
     /**
      * Claim a skin as NFT
      */
-    const claimSkinNFT = useCallback(async (skinId) => {
+    const claimSkinNFT = useCallback(async (skinId, skinName, skinColors) => {
         if (!account) {
             throw new Error('Wallet not connected');
         }
@@ -31,11 +33,25 @@ export function useSkinNFT() {
             const tx = new Transaction();
             tx.setSender(account.address);
 
+            // Convert colors object to array of strings in correct order (1-7)
+            const colorsArray = [
+                skinColors[1], // I piece
+                skinColors[2], // O piece
+                skinColors[3], // T piece
+                skinColors[4], // S piece
+                skinColors[5], // Z piece
+                skinColors[6], // J piece
+                skinColors[7], // L piece
+            ];
+
             // Call the mint_skin function
             tx.moveCall({
                 target: `${CONTRACT_CONFIG.packageId}::${CONTRACT_CONFIG.moduleName}::mint_skin`,
                 arguments: [
-                    tx.pure.u64(skinId),
+                    tx.pure(bcs.string().serialize(skinName).toBytes()),
+                    tx.pure(bcs.u8().serialize(0).toBytes()),
+                    tx.pure(bcs.vector(bcs.string()).serialize(colorsArray).toBytes()),
+                    tx.object(CONTRACT_CONFIG.clockId),
                 ],
             });
 
@@ -87,9 +103,10 @@ export function useSkinNFT() {
             tx.moveCall({
                 target: `${CONTRACT_CONFIG.packageId}::${CONTRACT_CONFIG.moduleName}::list_skin`,
                 arguments: [
-                    tx.object(CONTRACT_CONFIG.marketplaceId),
                     tx.object(nftId),
                     tx.pure.u64(price),
+                    tx.pure.u64(86400000), // 24 hours in milliseconds
+                    tx.object(CONTRACT_CONFIG.clockId),
                 ],
             });
 
@@ -142,9 +159,10 @@ export function useSkinNFT() {
             tx.moveCall({
                 target: `${CONTRACT_CONFIG.packageId}::${CONTRACT_CONFIG.moduleName}::buy_skin`,
                 arguments: [
-                    tx.object(CONTRACT_CONFIG.marketplaceId),
                     tx.object(listingId),
                     coin,
+                    tx.object(CONTRACT_CONFIG.marketplaceId),
+                    tx.object(CONTRACT_CONFIG.clockId),
                 ],
             });
 
@@ -188,7 +206,6 @@ export function useSkinNFT() {
             tx.moveCall({
                 target: `${CONTRACT_CONFIG.packageId}::${CONTRACT_CONFIG.moduleName}::cancel_listing`,
                 arguments: [
-                    tx.object(CONTRACT_CONFIG.marketplaceId),
                     tx.object(listingId),
                 ],
             });
@@ -223,6 +240,50 @@ export function useSkinNFT() {
     }, []);
 
     /**
+     * Query user's owned BlockSkin NFTs from blockchain
+     * Returns array of { objectId, skinName, colors, rarity }
+     */
+    const getOwnedNFTs = useCallback(async () => {
+        if (!account) {
+            return [];
+        }
+
+        try {
+            console.log('Querying owned NFTs for address:', account.address);
+            
+            // Query owned objects filtered by BlockSkin type
+            const ownedObjects = await suiClient.getOwnedObjects({
+                owner: account.address,
+                filter: {
+                    StructType: `${CONTRACT_CONFIG.packageId}::${CONTRACT_CONFIG.moduleName}::BlockSkin`
+                },
+                options: {
+                    showContent: true,
+                    showType: true,
+                }
+            });
+
+            console.log('Owned NFTs:', ownedObjects);
+
+            // Parse the NFT data
+            const nfts = ownedObjects.data.map(obj => {
+                const fields = obj.data?.content?.fields;
+                return {
+                    objectId: obj.data.objectId,
+                    skinName: fields?.name || 'Unknown',
+                    colors: fields?.colors || [],
+                    rarity: fields?.rarity || 0,
+                };
+            });
+
+            return nfts;
+        } catch (error) {
+            console.error('Failed to query owned NFTs:', error);
+            return [];
+        }
+    }, [account, suiClient]);
+
+    /**
      * Check if a skin is claimed
      */
     const isSkinClaimed = useCallback((skinId) => {
@@ -236,6 +297,7 @@ export function useSkinNFT() {
         buySkinNFT,
         cancelListing,
         getClaimedSkins,
+        getOwnedNFTs,
         isSkinClaimed,
         isLoading,
         error,

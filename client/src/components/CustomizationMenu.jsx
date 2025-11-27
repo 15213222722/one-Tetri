@@ -26,7 +26,8 @@ export default function CustomizationMenu({ onBack, onSkinSelect }) {
 
     const handleClaimNFT = async (skinId) => {
         try {
-            await skinNFT.claimSkinNFT(skinId);
+            const skin = getSkinById(skinId);
+            await skinNFT.claimSkinNFT(skinId, skin.name, skin.colors);
             // Success feedback will be handled by the hook
         } catch (error) {
             console.error('Failed to claim NFT:', error);

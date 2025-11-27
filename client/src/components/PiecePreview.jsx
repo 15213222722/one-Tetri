@@ -2,7 +2,7 @@ import { useRef, useEffect } from 'react';
 
 const CELL_SIZE = 20;
 
-const PIECE_COLORS = {
+const DEFAULT_PIECE_COLORS = {
     0: '#000000',
     1: '#00f0f0', // I - Cyan
     2: '#f0f000', // O - Yellow
@@ -23,8 +23,9 @@ const PIECE_SHAPES = {
     7: [[0,0,0,0],[0,0,1,0],[1,1,1,0],[0,0,0,0]]
 };
 
-const PiecePreview = ({ pieceType, label }) => {
+const PiecePreview = ({ pieceType, label, skinColors = null }) => {
     const canvasRef = useRef(null);
+    const PIECE_COLORS = skinColors || DEFAULT_PIECE_COLORS;
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -65,7 +66,7 @@ const PiecePreview = ({ pieceType, label }) => {
                 }
             }
         }
-    }, [pieceType]);
+    }, [pieceType, PIECE_COLORS]);
 
     return (
         <div className="piece-preview">

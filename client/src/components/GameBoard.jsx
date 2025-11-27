@@ -4,7 +4,7 @@ const GRID_WIDTH = 10;
 const GRID_HEIGHT = 20;
 const CELL_SIZE = 30;
 
-const PIECE_COLORS = {
+const DEFAULT_PIECE_COLORS = {
     0: '#000000',
     1: '#00f0f0', // I - Cyan
     2: '#f0f000', // O - Yellow
@@ -89,7 +89,7 @@ const GameBoard = ({ grid, currentPiece, ghostPiece, isPaused, renderTrigger, cl
     const animationFrameRef = useRef(null);
     
     // Use skin colors if provided, otherwise use default
-    const colors = skinColors || PIECE_COLORS;
+    const PIECE_COLORS = skinColors || DEFAULT_PIECE_COLORS;
 
     // Animate line clear effect
     useEffect(() => {
