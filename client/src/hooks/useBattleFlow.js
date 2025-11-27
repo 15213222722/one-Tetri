@@ -197,6 +197,8 @@ export function useBattleFlow(socket) {
         clearInterval(countdownIntervalRef.current);
         setTimeout(() => {
           setCountdownValue(null);
+          setBattleState('playing'); // Start the game after countdown
+          console.log('🎮 Battle started!');
         }, 1000);
       }
     }, 1000);
