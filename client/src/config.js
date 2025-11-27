@@ -16,14 +16,14 @@ export const WEBSOCKET_CONFIG = {
 
 // Deployed Contract Addresses
 export const CONTRACT_CONFIG = {
-    // Package ID - the deployed smart contract package (Updated for Multiplayer)
-    packageId: '0x4bf5f75d851120181674181a8a6048f4d1a7980a3e8e529f18f23f5cbf41f8b7',
+    // Package ID - the deployed smart contract package (Updated with NFT Skin System)
+    packageId: '0x9fb6a73cd68dfb1821ab456982e6c9256546a8ecd29cd14bd7b803a2e3c9eb37',
     
     // Shared Objects - required for transactions
-    leaderboardId: '0xf1b0f2e1dc255b865878d527d32f731ca2b189c5c28a2a644e7dc51425449f28',
-    treasuryId: '0xd0b57ab010a2a6f2976dd151afc5009e234b64019d7a2a584221bc8d5d936944',
-    usernameRegistryId: '0x68bbdeb830d13734575943a863e86850e882c8afd7df4fe57780431ad232464f',
-    marketplaceId: '0x1f5d93361cd9b6bb32de1000798d8d581603ca6e19a905700548731a5884beea',
+    leaderboardId: '0x7a172b5b34966a3efb437402bb1ad3c1e112e01466f297f730deec23c56f53ac',
+    treasuryId: '0x66e95c3bf2cc405afd12e5c68c11f974eb099cc1f90a26d7b2f87cc7641d3bd7',
+    usernameRegistryId: '0x27ec11dacbb79fc0de4f9dfacb2220ed941ae97a12c9bb504cbcf3954c267351',
+    marketplaceId: '0x945b30973e865aa12e4b8aea43163b195e00b73565376caaab4c151b8e4214be',
     
     // System Objects - Sui built-in objects
     randomId: '0x8',  // Sui Random object
@@ -34,7 +34,7 @@ export const CONTRACT_CONFIG = {
     
     // Token Information
     token: {
-        type: '0x4bf5f75d851120181674181a8a6048f4d1a7980a3e8e529f18f23f5cbf41f8b7::game::GAME',
+        type: '0x9fb6a73cd68dfb1821ab456982e6c9256546a8ecd29cd14bd7b803a2e3c9eb37::game::GAME',
         symbol: 'TETRI',
         name: 'TetriChain Token',
         decimals: 0,  // Token has no decimals - raw balance is display balance

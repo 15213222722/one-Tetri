@@ -207,12 +207,12 @@ function App() {
 
                         <button 
                             className="menu-button multiplayer-button"
-                            onClick={() => setCurrentScreen('multiplayer')}
+                            onClick={() => showToast('info', 'Multiplayer coming soon! Stay tuned for epic battles.')}
                         >
                             <div className="menu-button-icon">MP</div>
                             <div className="menu-button-content">
                                 <div className="menu-button-title">MULTIPLAYER</div>
-                                <div className="menu-button-subtitle">PLAY ONLINE WITH FRIENDS AND FOES</div>
+                                <div className="menu-button-subtitle">COMING SOON - PLAY ONLINE WITH FRIENDS</div>
                             </div>
                         </button>
 
