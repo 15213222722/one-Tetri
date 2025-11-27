@@ -12,6 +12,7 @@ import MultiplayerMenu from './components/MultiplayerMenu.jsx';
 import BattleView from './components/BattleView.jsx';
 import SkinUnlockNotification from './components/SkinUnlockNotification.jsx';
 import CustomizationMenu from './components/CustomizationMenu.jsx';
+import MarketplaceView from './components/MarketplaceView.jsx';
 import { useGame } from './hooks/useGame.js';
 import { useBlockchain } from './hooks/useBlockchain.js';
 import { useWebSocket } from './hooks/useWebSocket.js';
@@ -267,12 +268,12 @@ function App() {
 
                         <button 
                             className="menu-button marketplace-button"
-                            onClick={() => showToast('info', 'Marketplace coming soon!')}
+                            onClick={() => setCurrentScreen('marketplace')}
                         >
-                            <div className="menu-button-icon">NFT</div>
+                            <div className="menu-button-icon">🛒</div>
                             <div className="menu-button-content">
                                 <div className="menu-button-title">MARKETPLACE</div>
-                                <div className="menu-button-subtitle">BUY SKINS AND CUSTOMIZE YOUR BLOCKS</div>
+                                <div className="menu-button-subtitle">TRADE SKIN NFTS WITH OTHER PLAYERS</div>
                             </div>
                         </button>
                     </div>
@@ -455,6 +456,13 @@ function App() {
                         setSelectedSkin(skin);
                         console.log('Selected skin:', skin);
                     }}
+                />
+            )}
+
+            {/* Marketplace Screen */}
+            {currentScreen === 'marketplace' && (
+                <MarketplaceView
+                    onBack={() => setCurrentScreen('menu')}
                 />
             )}
 

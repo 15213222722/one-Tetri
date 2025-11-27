@@ -1,0 +1,304 @@
+.marketplace-view {
+    width: 100%;
+    height: 100vh;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    color: white;
+    overflow-y: auto;
+}
+
+.marketplace-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    border-bottom: 2px solid #333;
+}
+
+.marketplace-header h1 {
+    font-size: 32px;
+    margin: 0;
+    color: #00f0f0;
+    text-shadow: 0 0 10px rgba(0, 240, 240, 0.5);
+    flex: 1;
+    text-align: center;
+}
+
+.list-nft-button {
+    background: linear-gradient(135deg, #f0a000 0%, #d08000 100%);
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.list-nft-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(240, 160, 0, 0.5);
+}
+
+.marketplace-content {
+    padding: 30px;
+}
+
+.loading-message {
+    text-align: center;
+    font-size: 18px;
+    color: #aaa;
+    margin-top: 50px;
+}
+
+.error-message {
+    background: rgba(255, 0, 0, 0.2);
+    color: #ff6666;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.no-listings {
+    text-align: center;
+    margin-top: 100px;
+}
+
+.no-listings h2 {
+    font-size: 28px;
+    color: #aaa;
+    margin-bottom: 10px;
+}
+
+.no-listings p {
+    font-size: 16px;
+    color: #666;
+}
+
+.listings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.listing-card {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 2px solid #333;
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s;
+}
+
+.listing-card:hover {
+    border-color: #00f0f0;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 240, 240, 0.3);
+}
+
+.listing-preview {
+    margin-bottom: 15px;
+}
+
+.skin-colors {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.skin-color-block {
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.listing-info {
+    text-align: center;
+}
+
+.skin-name {
+    font-size: 24px;
+    margin: 0 0 8px 0;
+    color: #fff;
+    text-transform: uppercase;
+}
+
+.skin-description {
+    font-size: 14px;
+    color: #aaa;
+    margin: 0 0 15px 0;
+    line-height: 1.4;
+}
+
+.listing-details {
+    margin: 15px 0;
+}
+
+.price {
+    font-size: 20px;
+    font-weight: bold;
+    color: #f0a000;
+    margin-bottom: 5px;
+}
+
+.seller {
+    font-size: 14px;
+    color: #aaa;
+}
+
+.buy-button {
+    background: linear-gradient(135deg, #00f000 0%, #00a000 100%);
+    color: #000;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: all 0.2s;
+    width: 100%;
+}
+
+.buy-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 240, 0, 0.5);
+}
+
+.buy-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 2px solid #00f0f0;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+}
+
+.modal-content h2 {
+    color: #00f0f0;
+    margin-bottom: 15px;
+}
+
+.modal-content p {
+    color: #aaa;
+    margin-bottom: 20px;
+}
+
+.price-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #333;
+    border-radius: 6px;
+    background: #0a0a0a;
+    color: white;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.price-input:focus {
+    outline: none;
+    border-color: #00f0f0;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.cancel-button {
+    flex: 1;
+    background: none;
+    border: 2px solid #666;
+    color: #666;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s;
+}
+
+.cancel-button:hover {
+    border-color: #aaa;
+    color: #aaa;
+}
+
+.confirm-button {
+    flex: 1;
+    background: linear-gradient(135deg, #f0a000 0%, #d08000 100%);
+    color: #000;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.confirm-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(240, 160, 0, 0.5);
+}
+
+.confirm-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.error-toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(255, 0, 0, 0.9);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    z-index: 10001;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .listings-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .marketplace-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .marketplace-header h1 {
+        font-size: 24px;
+        text-align: left;
+    }
+    
+    .modal-buttons {
+        flex-direction: column;
+    }
+}

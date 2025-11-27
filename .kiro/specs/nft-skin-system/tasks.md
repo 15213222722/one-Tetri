@@ -161,23 +161,30 @@
 
 ## Phase 9: Frontend - Marketplace
 
-- [ ] 10. Build marketplace UI
-  - [ ] 10.1 Create MarketplaceView component
+- [x] 10. Build marketplace UI
+
+
+  - [x] 10.1 Create MarketplaceView component
+
+
     - Display all listed NFTs with prices
     - _Requirements: 5.4_
   
-  - [ ] 10.2 Implement list NFT functionality
+  - [x] 10.2 Implement list NFT functionality
+
     - Form to enter price
     - Call smart contract list_skin
     - _Requirements: 5.1_
   
-  - [ ] 10.3 Implement buy NFT functionality
+  - [x] 10.3 Implement buy NFT functionality
+
     - Buy button for each listing
     - Call smart contract buy_skin
     - Update local inventory
     - _Requirements: 5.2, 5.3_
   
-  - [ ] 10.4 Implement cancel listing
+  - [x] 10.4 Implement cancel listing
+
     - Cancel button for own listings
     - Call smart contract cancel_listing
     - _Requirements: 5.5_
