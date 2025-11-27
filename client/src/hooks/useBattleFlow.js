@@ -23,8 +23,13 @@ export function useBattleFlow(socket) {
 
   // Start matchmaking
   const startMatchmaking = useCallback((wager) => {
-    if (!socket) return;
+    if (!socket) {
+      console.error('❌ Cannot start matchmaking: socket not connected');
+      return;
+    }
 
+    console.log('🔍 Starting matchmaking with wager:', wager);
+    console.log('Socket connected:', socket.connected);
     setBattleState('matchmaking');
     matchmakingStartTimeRef.current = Date.now();
     
@@ -91,12 +96,14 @@ export function useBattleFlow(socket) {
     // Matchmaking events
     const handleMatchmakingFound = (data) => {
       console.log('🎮 Match found!', data);
+      console.log('Current battle state:', battleState);
       setOpponentData(data.opponent);
       setRoomData({ 
         roomId: data.roomId,
         wager: data.wager 
       });
       setBattleState('countdown');
+      console.log('Starting countdown...');
       startCountdown();
     };
 
