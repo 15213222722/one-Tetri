@@ -144,12 +144,26 @@ export class GameStateSync {
   }
 
   /**
+   * Serialize a piece object to a plain format (without methods)
+   */
+  private serializePiece(piece: any): any {
+    if (!piece) return null;
+    
+    return {
+      type: piece.type,
+      x: piece.x,
+      y: piece.y,
+      rotation: piece.rotation,
+    };
+  }
+
+  /**
    * Handle game state update
    */
   async handleStateUpdate(
     roomId: string,
     walletAddress: string,
-    stateUpdate: GameStateUpdate
+    stateUpdate: any
   ): Promise<void> {
     try {
       const room = await this.roomManager.getRoom(roomId);
@@ -166,13 +180,26 @@ export class GameStateSync {
         return;
       }
 
-      // Add timestamp
-      stateUpdate.timestamp = Date.now();
+      // Serialize the state to remove class methods
+      const serializedState = {
+        grid: stateUpdate.grid,
+        score: stateUpdate.score,
+        linesCleared: stateUpdate.linesCleared,
+        level: stateUpdate.level,
+        currentPiece: this.serializePiece(stateUpdate.currentPiece),
+        ghostPiece: this.serializePiece(stateUpdate.ghostPiece),
+        holdPiece: this.serializePiece(stateUpdate.holdPiece),
+        nextQueue: stateUpdate.nextQueue,
+        piecesPlaced: stateUpdate.piecesPlaced || 0,
+        timestamp: Date.now(),
+      };
 
-      // Broadcast state to opponent within 100ms target
-      this.socketManager.emitToPlayer(opponentAddress, 'game:state_update', stateUpdate);
+      // Broadcast state to opponent - use consistent event name
+      this.socketManager.emitToPlayer(opponentAddress, 'game:opponent_state', {
+        state: serializedState,
+      });
 
-      logger.debug('State update broadcasted', { roomId, walletAddress, score: stateUpdate.score });
+      logger.debug('State update broadcasted', { roomId, walletAddress, score: serializedState.score });
 
     } catch (error) {
       logger.error('Error handling state update', { error, roomId, walletAddress });

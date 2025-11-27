@@ -15,6 +15,74 @@ const PIECE_COLORS = {
     7: '#f0a000'  // L - Orange
 };
 
+/**
+ * Get piece shape from PIECE_SHAPES based on type and rotation
+ * This allows us to render pieces that don't have the .getShape() method
+ */
+const PIECE_SHAPES = {
+    1: [ // I
+        [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]],
+        [[0,0,1,0],[0,0,1,0],[0,0,1,0],[0,0,1,0]],
+        [[0,0,0,0],[0,0,0,0],[1,1,1,1],[0,0,0,0]],
+        [[0,1,0,0],[0,1,0,0],[0,1,0,0],[0,1,0,0]]
+    ],
+    2: [ // O
+        [[0,0,0,0],[0,1,1,0],[0,1,1,0],[0,0,0,0]],
+        [[0,0,0,0],[0,1,1,0],[0,1,1,0],[0,0,0,0]],
+        [[0,0,0,0],[0,1,1,0],[0,1,1,0],[0,0,0,0]],
+        [[0,0,0,0],[0,1,1,0],[0,1,1,0],[0,0,0,0]]
+    ],
+    3: [ // T
+        [[0,0,0,0],[0,1,0,0],[1,1,1,0],[0,0,0,0]],
+        [[0,0,0,0],[0,1,0,0],[0,1,1,0],[0,1,0,0]],
+        [[0,0,0,0],[0,0,0,0],[1,1,1,0],[0,1,0,0]],
+        [[0,0,0,0],[0,1,0,0],[1,1,0,0],[0,1,0,0]]
+    ],
+    4: [ // S
+        [[0,0,0,0],[0,1,1,0],[1,1,0,0],[0,0,0,0]],
+        [[0,0,0,0],[0,1,0,0],[0,1,1,0],[0,0,1,0]],
+        [[0,0,0,0],[0,0,0,0],[0,1,1,0],[1,1,0,0]],
+        [[0,0,0,0],[1,0,0,0],[1,1,0,0],[0,1,0,0]]
+    ],
+    5: [ // Z
+        [[0,0,0,0],[1,1,0,0],[0,1,1,0],[0,0,0,0]],
+        [[0,0,0,0],[0,0,1,0],[0,1,1,0],[0,1,0,0]],
+        [[0,0,0,0],[0,0,0,0],[1,1,0,0],[0,1,1,0]],
+        [[0,0,0,0],[0,1,0,0],[1,1,0,0],[1,0,0,0]]
+    ],
+    6: [ // J
+        [[0,0,0,0],[1,0,0,0],[1,1,1,0],[0,0,0,0]],
+        [[0,0,0,0],[0,1,1,0],[0,1,0,0],[0,1,0,0]],
+        [[0,0,0,0],[0,0,0,0],[1,1,1,0],[0,0,1,0]],
+        [[0,0,0,0],[0,1,0,0],[0,1,0,0],[1,1,0,0]]
+    ],
+    7: [ // L
+        [[0,0,0,0],[0,0,1,0],[1,1,1,0],[0,0,0,0]],
+        [[0,0,0,0],[0,1,0,0],[0,1,0,0],[0,1,1,0]],
+        [[0,0,0,0],[0,0,0,0],[1,1,1,0],[1,0,0,0]],
+        [[0,0,0,0],[1,1,0,0],[0,1,0,0],[0,1,0,0]]
+    ]
+};
+
+/**
+ * Get shape for a piece (works with both class instances and plain objects)
+ */
+const getPieceShape = (piece) => {
+    if (!piece) return null;
+    
+    // If piece has getShape method, use it
+    if (piece.getShape) {
+        return piece.getShape();
+    }
+    
+    // Otherwise, look up shape from PIECE_SHAPES
+    if (piece.type && piece.rotation !== undefined) {
+        return PIECE_SHAPES[piece.type]?.[piece.rotation] || null;
+    }
+    
+    return null;
+};
+
 const GameBoard = ({ grid, currentPiece, ghostPiece, isPaused, renderTrigger, clearingLines = [] }) => {
     const canvasRef = useRef(null);
     const [animationProgress, setAnimationProgress] = useState(0);
@@ -136,35 +204,37 @@ const GameBoard = ({ grid, currentPiece, ghostPiece, isPaused, renderTrigger, cl
         }
 
         // Draw ghost piece (shadow) - shows where piece will land
-        if (ghostPiece && ghostPiece.getShape && currentPiece) {
-            const shape = ghostPiece.getShape();
-            const color = PIECE_COLORS[ghostPiece.type];
+        if (ghostPiece && currentPiece) {
+            const shape = getPieceShape(ghostPiece);
+            if (shape) {
+                const color = PIECE_COLORS[ghostPiece.type];
             
-            for (let y = 0; y < 4; y++) {
-                for (let x = 0; x < 4; x++) {
-                    if (shape[y][x]) {
-                        const gridX = ghostPiece.x + x;
-                        const gridY = ghostPiece.y + y;
-                        
-                        if (gridY >= 0 && gridY < GRID_HEIGHT && gridX >= 0 && gridX < GRID_WIDTH) {
-                            // Draw semi-transparent ghost piece
-                            ctx.fillStyle = color + '30'; // Add alpha for transparency
-                            ctx.fillRect(
-                                gridX * CELL_SIZE + 1,
-                                gridY * CELL_SIZE + 1,
-                                CELL_SIZE - 2,
-                                CELL_SIZE - 2
-                            );
+                for (let y = 0; y < 4; y++) {
+                    for (let x = 0; x < 4; x++) {
+                        if (shape[y][x]) {
+                            const gridX = ghostPiece.x + x;
+                            const gridY = ghostPiece.y + y;
                             
-                            // Draw outline only
-                            ctx.strokeStyle = color + '80'; // Semi-transparent outline
-                            ctx.lineWidth = 2;
-                            ctx.strokeRect(
-                                gridX * CELL_SIZE + 2,
-                                gridY * CELL_SIZE + 2,
-                                CELL_SIZE - 4,
-                                CELL_SIZE - 4
-                            );
+                            if (gridY >= 0 && gridY < GRID_HEIGHT && gridX >= 0 && gridX < GRID_WIDTH) {
+                                // Draw semi-transparent ghost piece
+                                ctx.fillStyle = color + '30'; // Add alpha for transparency
+                                ctx.fillRect(
+                                    gridX * CELL_SIZE + 1,
+                                    gridY * CELL_SIZE + 1,
+                                    CELL_SIZE - 2,
+                                    CELL_SIZE - 2
+                                );
+                                
+                                // Draw outline only
+                                ctx.strokeStyle = color + '80'; // Semi-transparent outline
+                                ctx.lineWidth = 2;
+                                ctx.strokeRect(
+                                    gridX * CELL_SIZE + 2,
+                                    gridY * CELL_SIZE + 2,
+                                    CELL_SIZE - 4,
+                                    CELL_SIZE - 4
+                                );
+                            }
                         }
                     }
                 }
@@ -172,35 +242,37 @@ const GameBoard = ({ grid, currentPiece, ghostPiece, isPaused, renderTrigger, cl
         }
 
         // Draw current falling piece (on top of ghost)
-        if (currentPiece && currentPiece.getShape) {
-            const shape = currentPiece.getShape();
-            const color = PIECE_COLORS[currentPiece.type];
+        if (currentPiece) {
+            const shape = getPieceShape(currentPiece);
+            if (shape) {
+                const color = PIECE_COLORS[currentPiece.type];
             
-            for (let y = 0; y < 4; y++) {
-                for (let x = 0; x < 4; x++) {
-                    if (shape[y][x]) {
-                        const gridX = currentPiece.x + x;
-                        const gridY = currentPiece.y + y;
-                        
-                        if (gridY >= 0 && gridY < GRID_HEIGHT && gridX >= 0 && gridX < GRID_WIDTH) {
-                            // Fill cell
-                            ctx.fillStyle = color;
-                            ctx.fillRect(
-                                gridX * CELL_SIZE + 1,
-                                gridY * CELL_SIZE + 1,
-                                CELL_SIZE - 2,
-                                CELL_SIZE - 2
-                            );
+                for (let y = 0; y < 4; y++) {
+                    for (let x = 0; x < 4; x++) {
+                        if (shape[y][x]) {
+                            const gridX = currentPiece.x + x;
+                            const gridY = currentPiece.y + y;
                             
-                            // Add inner border for depth
-                            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-                            ctx.lineWidth = 2;
-                            ctx.strokeRect(
-                                gridX * CELL_SIZE + 2,
-                                gridY * CELL_SIZE + 2,
-                                CELL_SIZE - 4,
-                                CELL_SIZE - 4
-                            );
+                            if (gridY >= 0 && gridY < GRID_HEIGHT && gridX >= 0 && gridX < GRID_WIDTH) {
+                                // Fill cell
+                                ctx.fillStyle = color;
+                                ctx.fillRect(
+                                    gridX * CELL_SIZE + 1,
+                                    gridY * CELL_SIZE + 1,
+                                    CELL_SIZE - 2,
+                                    CELL_SIZE - 2
+                                );
+                                
+                                // Add inner border for depth
+                                ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                                ctx.lineWidth = 2;
+                                ctx.strokeRect(
+                                    gridX * CELL_SIZE + 2,
+                                    gridY * CELL_SIZE + 2,
+                                    CELL_SIZE - 4,
+                                    CELL_SIZE - 4
+                                );
+                            }
                         }
                     }
                 }
