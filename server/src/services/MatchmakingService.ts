@@ -2,6 +2,7 @@ import { redisClient } from './RedisClient';
 import { logger } from '../utils/logger';
 import { config } from '../config';
 import { SocketManager } from './SocketManager';
+import { RoomManager } from './RoomManager';
 
 interface MatchmakingPlayer {
   walletAddress: string;
@@ -14,11 +15,19 @@ export class MatchmakingService {
   private static readonly QUEUE_KEY = 'matchmaking:queue';
   private static readonly TIMEOUT_KEY_PREFIX = 'matchmaking:timeout:';
   private socketManager: SocketManager;
+  private roomManager: RoomManager | null = null;
   private matchmakingInterval: NodeJS.Timeout | null = null;
 
   constructor(socketManager: SocketManager) {
     this.socketManager = socketManager;
     this.startMatchmakingLoop();
+  }
+
+  /**
+   * Set the room manager (called after RoomManager is initialized)
+   */
+  setRoomManager(roomManager: RoomManager): void {
+    this.roomManager = roomManager;
   }
 
   /**
@@ -203,36 +212,49 @@ export class MatchmakingService {
       await this.leaveQueue(player1.walletAddress);
       await this.leaveQueue(player2.walletAddress);
 
+      const wager = Math.max(player1.wager, player2.wager);
+
       logger.info('Match found', {
         player1: player1.walletAddress,
         player2: player2.walletAddress,
-        wager: Math.max(player1.wager, player2.wager),
+        wager,
       });
 
-      // Notify both players
-      const matchData = {
-        opponent: {
-          address: player2.walletAddress,
-          username: player2.username,
-        },
-        wager: Math.max(player1.wager, player2.wager),
-      };
+      // Create a battle room if RoomManager is available
+      if (this.roomManager) {
+        const room = await this.roomManager.createRoom(
+          player1.walletAddress,
+          player1.username,
+          wager,
+          false // Not a private room
+        );
 
-      this.socketManager.emitToPlayer(player1.walletAddress, 'matchmaking:found', {
-        ...matchData,
-        opponent: {
-          address: player2.walletAddress,
-          username: player2.username,
-        },
-      });
+        // Add player 2 to the room
+        await this.roomManager.joinRoom(room.roomId, player2.walletAddress, player2.username);
 
-      this.socketManager.emitToPlayer(player2.walletAddress, 'matchmaking:found', {
-        ...matchData,
-        opponent: {
-          address: player1.walletAddress,
-          username: player1.username,
-        },
-      });
+        // Notify both players with room data
+        this.socketManager.emitToPlayer(player1.walletAddress, 'matchmaking:found', {
+          roomId: room.roomId,
+          opponent: {
+            address: player2.walletAddress,
+            username: player2.username,
+          },
+          wager,
+        });
+
+        this.socketManager.emitToPlayer(player2.walletAddress, 'matchmaking:found', {
+          roomId: room.roomId,
+          opponent: {
+            address: player1.walletAddress,
+            username: player1.username,
+          },
+          wager,
+        });
+
+        logger.info('Battle room created for match', { roomId: room.roomId });
+      } else {
+        logger.error('RoomManager not initialized, cannot create battle room');
+      }
 
     } catch (error) {
       logger.error('Error creating match', { error });

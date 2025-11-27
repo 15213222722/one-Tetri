@@ -64,6 +64,7 @@ async function initializeServices() {
 
     // Initialize Matchmaking Service
     matchmakingService = new MatchmakingService(socketManager);
+    matchmakingService.setRoomManager(roomManager); // Connect RoomManager to MatchmakingService
     logger.info('Matchmaking service initialized');
 
     // Setup event handlers
