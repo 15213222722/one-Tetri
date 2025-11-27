@@ -53,6 +53,12 @@ export function useMultiplayerBattle(socket, roomData, opponentData) {
     };
   }, [roomData, localGame, gameSeed]);
 
+  // Store latest game state in a ref to avoid stale closures
+  const gameStateRef = useRef(null);
+  useEffect(() => {
+    gameStateRef.current = localGame.gameState;
+  }, [localGame.gameState]);
+
   // Sync game state to opponent periodically
   useEffect(() => {
     if (!socket || !roomData || !gameStartedRef.current) return;
@@ -62,7 +68,7 @@ export function useMultiplayerBattle(socket, roomData, opponentData) {
     // Send state updates every 150ms (not too frequent to avoid lag)
     let updateCount = 0;
     const interval = setInterval(() => {
-      const state = localGame.gameState;
+      const state = gameStateRef.current; // Use ref to get latest state
       
       // Debug: log state availability
       if (updateCount === 0) {
