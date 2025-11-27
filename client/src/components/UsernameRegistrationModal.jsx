@@ -131,14 +131,6 @@ function UsernameRegistrationModal({
             >
               {isRegistering ? 'REGISTERING...' : 'REGISTER USERNAME'}
             </button>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={onClose}
-              disabled={isRegistering}
-            >
-              SKIP FOR NOW
-            </button>
           </div>
         </form>
 

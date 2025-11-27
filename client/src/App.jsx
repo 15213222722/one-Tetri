@@ -493,12 +493,12 @@ function App() {
                 />
             )}
 
-            {/* Username Registration Screen */}
+            {/* Username Registration Screen - Mandatory for first-time users */}
             {currentScreen === 'username' && (
                 <div className="username-screen">
                     <UsernameRegistrationModal
                         isOpen={true}
-                        onClose={handleUsernameRegistered}
+                        onClose={() => {}} // No skip - username is mandatory
                         onRegister={async (username) => {
                             try {
                                 await blockchain.registerUsername(username);
