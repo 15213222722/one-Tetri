@@ -118,7 +118,7 @@ export function useMultiplayerBattle(socket, roomData, opponentData) {
       console.log('📡 Stopping sync interval');
       clearInterval(syncInterval);
     };
-  }, [socket, roomData]); // Removed localGame.gameState dependency to prevent restarts
+  }, [socket, roomData?.roomId]); // Use roomId instead of roomData object to prevent restarts
 
   // Check for game over
   useEffect(() => {
