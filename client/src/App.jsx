@@ -55,7 +55,12 @@ function App() {
     useEffect(() => {
         if (blockchain.account && currentScreen === 'landing') {
             // Wallet just connected, check if user has username
-            if (!blockchain.isLoadingUsername) {
+            if (blockchain.isLoadingUsername) {
+                // Still checking for username, show loading
+                setLoadingMessage('Checking username registration...');
+            } else {
+                // Finished checking
+                setLoadingMessage('');
                 if (!blockchain.username) {
                     // No username, show registration modal
                     setCurrentScreen('username');
@@ -514,7 +519,7 @@ function App() {
             )}
 
             {/* Loading Overlay */}
-            {(blockchain.isCreatingGameSeed || blockchain.isSubmittingScore) && (
+            {(blockchain.isCreatingGameSeed || blockchain.isSubmittingScore || blockchain.isLoadingUsername) && (
                 <LoadingOverlay message={loadingMessage} />
             )}
 

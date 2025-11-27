@@ -24,26 +24,57 @@ export const useBlockchain = () => {
     const [isLoadingUsername, setIsLoadingUsername] = useState(true);
     const [isRegisteringUsername, setIsRegisteringUsername] = useState(false);
 
-    // Load username from localStorage on mount
+    // Load username - check localStorage first, then blockchain
     useEffect(() => {
-        if (account) {
+        const loadUsername = async () => {
+            if (!account) {
+                setUsername(null);
+                setIsLoadingUsername(false);
+                return;
+            }
+
+            setIsLoadingUsername(true);
             const storageKey = `tetrichain_username_${account.address}`;
             const storedUsername = localStorage.getItem(storageKey);
+            
             console.log('🔍 Loading username for address:', account.address);
             console.log('📦 Storage key:', storageKey);
             console.log('👤 Stored username:', storedUsername || 'NOT FOUND');
+
+            // If found in localStorage, use it
             if (storedUsername) {
                 setUsername(storedUsername);
-                console.log('✅ Username loaded successfully:', storedUsername);
-            } else {
-                console.log('❌ No username found in storage');
+                console.log('✅ Username loaded from localStorage:', storedUsername);
+                setIsLoadingUsername(false);
+                return;
             }
-            setIsLoadingUsername(false);
-        } else {
-            setUsername(null);
-            setIsLoadingUsername(false);
-        }
-    }, [account]);
+
+            // Not in localStorage, query blockchain
+            console.log('🔗 Querying blockchain for username...');
+            try {
+                const registryObject = await client.getObject({
+                    id: CONTRACT_CONFIG.usernameRegistryId,
+                    options: { showContent: true },
+                });
+
+                const fields = registryObject.data?.content?.fields;
+                console.log('📋 Registry fields:', fields);
+
+                // Try to get username from the registry
+                // Note: This is a simplified check - actual implementation depends on contract structure
+                // For now, we'll just check localStorage and assume no on-chain username
+                console.log('⚠️ On-chain username lookup not fully implemented yet');
+                setUsername(null);
+                setIsLoadingUsername(false);
+            } catch (error) {
+                console.error('❌ Error querying blockchain:', error);
+                setUsername(null);
+                setIsLoadingUsername(false);
+            }
+        };
+
+        loadUsername();
+    }, [account, client]);
 
     /**
      * Create a new game seed on the blockchain
