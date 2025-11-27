@@ -76,60 +76,61 @@ export function useMultiplayerBattle(socket, roomData, opponentData) {
       return;
     }
 
-    console.log('📡 Starting state sync interval');
+    console.log('📡 Starting state sync with requestAnimationFrame approach');
 
-    // Test: Simple interval to verify it works
-    const testInterval = setInterval(() => {
-      console.log('🧪 TEST INTERVAL WORKS!');
-    }, 500);
-    
-    setTimeout(() => {
-      console.log('🧪 Clearing test interval');
-      clearInterval(testInterval);
-    }, 3000);
-
-    // Send state updates every 150ms (not too frequent to avoid lag)
     let updateCount = 0;
-    const interval = setInterval(() => {
-      console.log('⏰ Interval tick #' + updateCount); // ALWAYS log to verify interval is running
-      const state = gameStateRef.current; // Use ref to get latest state
-      
-      // Debug: log state availability
-      if (updateCount === 0) {
-        console.log('📤 First sync attempt - State exists:', !!state, 'Socket:', !!socket, 'Room:', !!roomData);
-      }
-      
-      updateCount++;
-      
-      if (state && !state.isGameOver && !state.isPaused) {
-        socket.emit('game:state_update', {
-          roomId: roomData.roomId,
-          state: {
-            grid: state.grid,
-            score: state.score,
-            linesCleared: state.linesCleared,
-            level: state.level,
-            currentPiece: state.currentPiece,
-            nextQueue: state.nextQueue,
-            holdPiece: state.holdPiece,
-            piecesPlaced: state.piecesPlaced || 0,
-            ghostPiece: state.ghostPiece,
-          },
-        });
-        if (updateCount % 20 === 0) { // Log every 20 updates (~3 seconds)
-          console.log('📤 Sent state update #' + updateCount, 'Score:', state.score);
-        }
-      } else if (updateCount % 20 === 0) {
-        console.warn('📤 Cannot send state:', { hasState: !!state, isGameOver: state?.isGameOver, isPaused: state?.isPaused });
-      }
-    }, 150);
+    let lastSyncTime = 0;
+    const SYNC_INTERVAL = 200; // ms between syncs
+    let isActive = true;
 
-    console.log('📡 Interval created:', interval);
-    syncIntervalRef.current = interval;
+    const syncLoop = (timestamp) => {
+      if (!isActive) return;
+
+      // Only sync every SYNC_INTERVAL ms
+      if (timestamp - lastSyncTime >= SYNC_INTERVAL) {
+        console.log('⏰ Sync tick #' + updateCount);
+        const state = gameStateRef.current;
+        
+        if (updateCount === 0) {
+          console.log('📤 First sync attempt - State exists:', !!state, 'Socket:', !!socket, 'Room:', !!roomData);
+        }
+        
+        updateCount++;
+        
+        if (state && !state.isGameOver && !state.isPaused) {
+          socket.emit('game:state_update', {
+            roomId: roomData.roomId,
+            state: {
+              grid: state.grid,
+              score: state.score,
+              linesCleared: state.linesCleared,
+              level: state.level,
+              currentPiece: state.currentPiece,
+              nextQueue: state.nextQueue,
+              holdPiece: state.holdPiece,
+              piecesPlaced: state.piecesPlaced || 0,
+              ghostPiece: state.ghostPiece,
+            },
+          });
+          if (updateCount % 10 === 0) {
+            console.log('📤 Sent state update #' + updateCount, 'Score:', state.score);
+          }
+        } else if (updateCount % 10 === 0) {
+          console.warn('📤 Cannot send state:', { hasState: !!state, isGameOver: state?.isGameOver, isPaused: state?.isPaused });
+        }
+        
+        lastSyncTime = timestamp;
+      }
+
+      requestAnimationFrame(syncLoop);
+    };
+
+    requestAnimationFrame(syncLoop);
+    console.log('📡 Sync loop started with requestAnimationFrame');
 
     return () => {
-      console.log('📡 Stopping state sync interval, ID:', interval);
-      clearInterval(interval);
+      console.log('📡 Stopping sync loop');
+      isActive = false;
     };
   }, [socket, roomData]); // Removed localGame.gameState dependency to prevent restarts
 
