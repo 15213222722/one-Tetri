@@ -2,9 +2,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { SKINS, getUnlockedSkins } from '../skinConfig.js';
 
 /**
- * Hook to manage skin unlocks based on score milestones
+ * Hook to manage skin unlocks based on game statistics
  */
-export function useSkinUnlocks(currentScore) {
+export function useSkinUnlocks(gameStats) {
     const [unlockedSkins, setUnlockedSkins] = useState(() => {
         // Load from localStorage on mount
         const saved = localStorage.getItem('unlockedSkins');
@@ -13,11 +13,22 @@ export function useSkinUnlocks(currentScore) {
 
     const [newlyUnlocked, setNewlyUnlocked] = useState(null);
 
-    // Check for newly unlocked skins when score changes
-    useEffect(() => {
-        if (!currentScore) return;
+    // Extract stats with defaults
+    const { 
+        score = 0, 
+        level = 1, 
+        linesCleared = 0, 
+        tetrisCount = 0, 
+        maxCombo = 0 
+    } = gameStats || {};
 
-        const currentlyUnlocked = getUnlockedSkins(currentScore);
+    // Check for newly unlocked skins when game stats change
+    useEffect(() => {
+        // Skip if no valid stats
+        if (!gameStats) return;
+
+        const stats = { score, level, linesCleared, tetrisCount, maxCombo };
+        const currentlyUnlocked = getUnlockedSkins(stats);
         const newUnlocks = currentlyUnlocked.filter(
             skin => !unlockedSkins.includes(skin.id)
         );
@@ -26,12 +37,17 @@ export function useSkinUnlocks(currentScore) {
             // Add newly unlocked skins
             const updatedUnlocks = [...unlockedSkins, ...newUnlocks.map(s => s.id)];
             setUnlockedSkins(updatedUnlocks);
-            localStorage.setItem('unlockedSkins', JSON.stringify(updatedUnlocks));
+            
+            try {
+                localStorage.setItem('unlockedSkins', JSON.stringify(updatedUnlocks));
+            } catch (error) {
+                console.error('Failed to save unlocked skins to localStorage:', error);
+            }
 
             // Show notification for the first newly unlocked skin
             setNewlyUnlocked(newUnlocks[0]);
         }
-    }, [currentScore, unlockedSkins]);
+    }, [score, level, linesCleared, tetrisCount, maxCombo, unlockedSkins]);
 
     // Clear notification
     const clearNotification = useCallback(() => {

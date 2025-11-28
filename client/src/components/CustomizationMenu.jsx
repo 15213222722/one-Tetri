@@ -7,8 +7,8 @@ import './CustomizationMenu.css';
 /**
  * Customization menu for selecting and claiming skin NFTs
  */
-export default function CustomizationMenu({ onBack, onSkinSelect }) {
-    const skinUnlocks = useSkinUnlocks();
+export default function CustomizationMenu({ gameStats, onBack, onSkinSelect }) {
+    const skinUnlocks = useSkinUnlocks(gameStats);
     const skinNFT = useSkinNFT();
     
     const [selectedSkin, setSelectedSkin] = useState(() => {
@@ -94,7 +94,7 @@ export default function CustomizationMenu({ onBack, onSkinSelect }) {
                                     
                                     {!isUnlocked && (
                                         <div className="skin-requirement">
-                                            🔒 Reach {skin.unlockScore.toLocaleString()} points
+                                            🔒 {skin.unlockCondition?.description || `Reach ${skin.unlockScore?.toLocaleString() || 0} points`}
                                         </div>
                                     )}
 

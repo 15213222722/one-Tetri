@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { ConnectButton } from '@mysten/dapp-kit';
 import GameBoard from './components/GameBoard.jsx';
 import GameInfo from './components/GameInfo.jsx';
@@ -51,8 +51,23 @@ function App() {
     const blockchain = useBlockchain();
     const sound = useSound();
     
+    // Memoize game stats for skin unlock system
+    const gameStats = useMemo(() => ({
+        score: game.gameState.score,
+        level: game.gameState.level,
+        linesCleared: game.gameState.linesCleared,
+        tetrisCount: game.gameState.tetrisCount,
+        maxCombo: game.gameState.maxCombo
+    }), [
+        game.gameState.score,
+        game.gameState.level,
+        game.gameState.linesCleared,
+        game.gameState.tetrisCount,
+        game.gameState.maxCombo
+    ]);
+    
     // Skin unlock system
-    const skinUnlocks = useSkinUnlocks(game.gameState.score);
+    const skinUnlocks = useSkinUnlocks(gameStats);
     
     // Multiplayer hooks
     const webSocket = useWebSocket(blockchain.account?.address, blockchain.username);
@@ -572,6 +587,7 @@ function App() {
             {/* Customization Screen */}
             {currentScreen === 'customization' && (
                 <CustomizationMenu
+                    gameStats={gameStats}
                     onBack={() => setCurrentScreen('menu')}
                     onSkinSelect={(skin) => {
                         setSelectedSkin(skin.id);
