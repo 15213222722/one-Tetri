@@ -40,58 +40,23 @@ export default function SkinUnlockNotification({ skin, onClose }) {
 
     if (!skin) return null;
 
+    // Non-intrusive toast notification instead of modal
     return (
-        <div className="skin-unlock-overlay" onClick={onClose}>
-            <div className="skin-unlock-modal" onClick={(e) => e.stopPropagation()}>
-                <div className="skin-unlock-header">
-                    <h2>🎉 NEW SKIN UNLOCKED!</h2>
+        <div className="skin-unlock-toast" onClick={onClose}>
+            <div className="skin-unlock-toast-content">
+                <div className="skin-unlock-toast-icon">🎉</div>
+                <div className="skin-unlock-toast-text">
+                    <strong>{skin.name} Unlocked!</strong>
+                    <span>Visit Customization to claim as NFT</span>
                 </div>
-                <div className="skin-unlock-content">
-                    <div className="skin-unlock-name">{skin.name}</div>
-                    <div className="skin-unlock-description">{skin.description}</div>
-                    <div className="skin-unlock-colors">
-                        {Object.values(skin.colors).map((color, i) => (
-                            <div
-                                key={i}
-                                className="skin-color-preview"
-                                style={{ backgroundColor: color }}
-                            />
-                        ))}
-                    </div>
-                    {!claimed ? (
-                        <p className="skin-unlock-hint">
-                            Claim this skin as an NFT now or visit Customization later!
-                        </p>
-                    ) : (
-                        <p className="skin-unlock-claimed">
-                            ✅ NFT Claimed Successfully!
-                        </p>
-                    )}
-                    {error && (
-                        <p className="skin-unlock-error">
-                            ❌ {error}
-                        </p>
-                    )}
-                </div>
-                <div className="skin-unlock-buttons">
-                    {!claimed ? (
-                        <>
-                            <button 
-                                className="skin-unlock-claim" 
-                                onClick={handleClaimNFT}
-                                disabled={isLoading}
-                            >
-                                {isLoading ? 'CLAIMING...' : 'CLAIM AS NFT'}
-                            </button>
-                            <button className="skin-unlock-close" onClick={onClose}>
-                                LATER
-                            </button>
-                        </>
-                    ) : (
-                        <button className="skin-unlock-close" onClick={onClose}>
-                            CONTINUE
-                        </button>
-                    )}
+                <div className="skin-unlock-toast-colors">
+                    {Object.values(skin.colors).slice(0, 4).map((color, i) => (
+                        <div
+                            key={i}
+                            className="skin-color-mini"
+                            style={{ backgroundColor: color }}
+                        />
+                    ))}
                 </div>
             </div>
         </div>

@@ -1,0 +1,82 @@
+.leaderboard {
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid #667eea;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.leaderboard h3 {
+    color: #00f0f0;
+    margin: 0 0 15px 0;
+    font-size: 24px;
+    text-shadow: 0 0 10px rgba(0, 240, 240, 0.5);
+}
+
+.leaderboard .btn {
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.leaderboard-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.leaderboard-entry {
+    display: grid;
+    grid-template-columns: 40px 1fr 100px 80px;
+    gap: 12px;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    transition: all 0.2s;
+}
+
+.leaderboard-entry:hover {
+    background: rgba(102, 126, 234, 0.1);
+    border-color: rgba(102, 126, 234, 0.6);
+}
+
+.leaderboard-entry.highlight {
+    background: rgba(0, 240, 240, 0.1);
+    border: 2px solid #00f0f0;
+    box-shadow: 0 0 10px rgba(0, 240, 240, 0.3);
+}
+
+.leaderboard-rank {
+    color: #f0a000;
+    font-weight: bold;
+    font-size: 18px;
+    text-align: center;
+}
+
+.leaderboard-player {
+    color: #fff;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.leaderboard-score {
+    color: #00f0f0;
+    font-weight: bold;
+    font-size: 16px;
+    text-align: right;
+}
+
+.leaderboard-timestamp {
+    color: #999;
+    font-size: 12px;
+    text-align: right;
+}
+
+.empty-state {
+    color: #999;
+    text-align: center;
+    padding: 20px;
+    font-style: italic;
+}

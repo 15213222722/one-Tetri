@@ -105,10 +105,11 @@ export default function MarketplaceView({ onBack }) {
     const handleBuyNFT = async (listing) => {
         try {
             await skinNFT.buySkinNFT(listing.id, listing.price);
-            // Refresh listings after purchase
+            // Auto-refresh listings after purchase
             await loadMarketplaceListings();
         } catch (error) {
             console.error('Failed to buy NFT:', error);
+            setError(error.message || 'Failed to buy NFT');
         }
     };
 

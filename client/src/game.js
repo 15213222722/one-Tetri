@@ -282,6 +282,9 @@ export class TetrisGame {
         this.level = 1;
         this.isGameOver = false;
         this.isPaused = false;
+        this.tetrisCount = 0; // Track number of 4-line clears
+        this.currentCombo = 0; // Track current combo
+        this.maxCombo = 0; // Track max combo achieved
     }
 
     /**
@@ -334,7 +337,10 @@ export class TetrisGame {
             isGameOver: this.isGameOver,
             isPaused: this.isPaused,
             seed: this.seed,
-            completeLines: this.getCompleteLines()
+            completeLines: this.getCompleteLines(),
+            tetrisCount: this.tetrisCount,
+            currentCombo: this.currentCombo,
+            maxCombo: this.maxCombo
         };
     }
 
@@ -630,6 +636,20 @@ export class TetrisGame {
             
             // Level up every 10 lines
             this.level = Math.floor(this.linesCleared / 10) + 1;
+            
+            // Track Tetris (4-line clears)
+            if (linesCleared === 4) {
+                this.tetrisCount++;
+            }
+            
+            // Update combo
+            this.currentCombo++;
+            if (this.currentCombo > this.maxCombo) {
+                this.maxCombo = this.currentCombo;
+            }
+        } else {
+            // Reset combo if no lines cleared
+            this.currentCombo = 0;
         }
     }
 
@@ -756,6 +776,9 @@ export class TetrisGame {
         this.holdPiece = null;
         this.canHold = true;
         this.nextQueue = [];
+        this.tetrisCount = 0;
+        this.currentCombo = 0;
+        this.maxCombo = 0;
         
         // Reset piece generator if we have a seed
         if (this.pieceGenerator) {

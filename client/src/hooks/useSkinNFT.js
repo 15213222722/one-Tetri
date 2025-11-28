@@ -143,50 +143,69 @@ export function useSkinNFT() {
         setIsLoading(true);
         setError(null);
 
-        return new Promise((resolve, reject) => {
-            const tx = new Transaction();
-            tx.setSender(account.address);
-
-            // Note: This will need to be updated to use actual TETRI token coins
-            // For now, using a placeholder - the smart contract will need to accept TETRI tokens
-            // TODO: Query user's TETRI token coins and use them for payment
-            // const tetriCoins = await client.getCoins({ owner: account.address, coinType: CONTRACT_CONFIG.token.type });
-            // const [paymentCoin] = tx.splitCoins(tx.object(tetriCoins.data[0].coinObjectId), [price]);
-            
-            // Placeholder: Using gas coin until TETRI token payment is fully implemented
-            const [coin] = tx.splitCoins(tx.gas, [price]);
-
-            tx.moveCall({
-                target: `${CONTRACT_CONFIG.packageId}::${CONTRACT_CONFIG.moduleName}::buy_skin`,
-                arguments: [
-                    tx.object(listingId),
-                    coin,
-                    tx.object(CONTRACT_CONFIG.marketplaceId),
-                    tx.object(CONTRACT_CONFIG.clockId),
-                ],
+        try {
+            // Query user's TETRI token coins
+            const tetriCoins = await suiClient.getCoins({
+                owner: account.address,
+                coinType: CONTRACT_CONFIG.token.type,
             });
 
-            tx.setGasBudget(TX_CONFIG.submitScoreGasBudget);
+            console.log('TETRI coins:', tetriCoins);
 
-            signAndExecuteTransaction(
-                { transaction: tx },
-                {
-                    onSuccess: (result) => {
-                        console.log('✅ Skin NFT purchased successfully:', result);
-                        setIsLoading(false);
-                        resolve(result);
-                    },
-                    onError: (err) => {
-                        console.error('❌ Failed to buy skin NFT:', err);
-                        const errorMessage = err.message || 'Failed to buy skin NFT';
-                        setError(errorMessage);
-                        setIsLoading(false);
-                        reject(err);
-                    },
-                }
-            );
-        });
-    }, [account, signAndExecuteTransaction]);
+            if (!tetriCoins.data || tetriCoins.data.length === 0) {
+                throw new Error('You don\'t have any TETRI tokens. Play games to earn tokens!');
+            }
+
+            // Calculate total balance
+            const totalBalance = tetriCoins.data.reduce((sum, coin) => sum + parseInt(coin.balance), 0);
+            
+            if (totalBalance < price) {
+                throw new Error(`Insufficient TETRI tokens. You have ${totalBalance} but need ${price}`);
+            }
+
+            return new Promise((resolve, reject) => {
+                const tx = new Transaction();
+                tx.setSender(account.address);
+
+                // Use the first TETRI coin and split the payment amount
+                const [paymentCoin] = tx.splitCoins(tx.object(tetriCoins.data[0].coinObjectId), [price]);
+
+                tx.moveCall({
+                    target: `${CONTRACT_CONFIG.packageId}::${CONTRACT_CONFIG.moduleName}::buy_skin`,
+                    arguments: [
+                        tx.object(listingId),
+                        paymentCoin,
+                        tx.object(CONTRACT_CONFIG.marketplaceId),
+                        tx.object(CONTRACT_CONFIG.clockId),
+                    ],
+                });
+
+                tx.setGasBudget(TX_CONFIG.submitScoreGasBudget);
+
+                signAndExecuteTransaction(
+                    { transaction: tx },
+                    {
+                        onSuccess: (result) => {
+                            console.log('✅ Skin NFT purchased successfully:', result);
+                            setIsLoading(false);
+                            resolve(result);
+                        },
+                        onError: (err) => {
+                            console.error('❌ Failed to buy skin NFT:', err);
+                            const errorMessage = err.message || 'Failed to buy skin NFT';
+                            setError(errorMessage);
+                            setIsLoading(false);
+                            reject(err);
+                        },
+                    }
+                );
+            });
+        } catch (error) {
+            setIsLoading(false);
+            setError(error.message);
+            throw error;
+        }
+    }, [account, signAndExecuteTransaction, suiClient]);
 
     /**
      * Cancel marketplace listing

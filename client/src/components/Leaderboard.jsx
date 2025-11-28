@@ -1,16 +1,22 @@
+import './Leaderboard.css';
+
 const Leaderboard = ({ scores, currentPlayerAddress, isLoading, onRefresh, usernameMap = {} }) => {
     const formatAddress = (address) => {
         if (!address || address.length < 10) return address;
         return `${address.slice(0, 6)}...${address.slice(-4)}`;
     };
 
-    const getDisplayName = (address) => {
-        // If we have a username for this address, use it
-        if (usernameMap[address]) {
-            return usernameMap[address];
+    const getDisplayName = (entry) => {
+        // First check if the entry itself has a username
+        if (entry.username) {
+            return entry.username;
+        }
+        // Then check the usernameMap
+        if (usernameMap[entry.player]) {
+            return usernameMap[entry.player];
         }
         // Otherwise, show formatted address
-        return formatAddress(address);
+        return formatAddress(entry.player);
     };
 
     const formatTimestamp = (timestamp) => {
@@ -46,7 +52,7 @@ const Leaderboard = ({ scores, currentPlayerAddress, isLoading, onRefresh, usern
                             className={`leaderboard-entry ${currentPlayerAddress === entry.player ? 'highlight' : ''}`}
                         >
                             <span className="leaderboard-rank">#{index + 1}</span>
-                            <span className="leaderboard-player">{getDisplayName(entry.player)}</span>
+                            <span className="leaderboard-player">{getDisplayName(entry)}</span>
                             <span className="leaderboard-score">{entry.score.toLocaleString()}</span>
                             <span className="leaderboard-timestamp">{formatTimestamp(entry.timestamp)}</span>
                         </div>

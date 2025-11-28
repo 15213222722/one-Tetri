@@ -39,9 +39,15 @@ export const useGame = (gameSeed = null) => {
         gameSeedRef.current = gameSeed;
     }, [gameSeed]);
 
-    // Calculate drop interval based on level
+    // Calculate drop interval based on level (balanced progression)
     const getDropInterval = useCallback((level) => {
-        return Math.max(100, 1000 - (level - 1) * 100);
+        // Balanced: starts at 600ms, decreases by 70ms per level until level 7, then 10ms per level
+        if (level <= 6) {
+            return Math.max(90, 600 - (level - 1) * 70);
+        } else {
+            // Level 7: 90ms, Level 8: 80ms, Level 9: 70ms, Level 10: 60ms, etc.
+            return Math.max(30, 90 - (level - 7) * 10);
+        }
     }, []);
 
     // Update React state from game instance

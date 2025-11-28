@@ -274,10 +274,35 @@ export const useBlockchain = () => {
                 };
             });
 
-            console.log('Processed scores:', scores);
-            setLeaderboard(scores);
+            // Query usernames for all players
+            const usernameRegistry = await client.getObject({
+                id: CONTRACT_CONFIG.usernameRegistryId,
+                options: { showContent: true },
+            });
+
+            // For each player, try to get their username
+            const scoresWithUsernames = await Promise.all(scores.map(async (score) => {
+                try {
+                    // Try to get username from localStorage first
+                    const storageKey = `tetrichain_username_${score.player}`;
+                    const localUsername = localStorage.getItem(storageKey);
+                    
+                    if (localUsername) {
+                        return { ...score, username: localUsername };
+                    }
+                    
+                    // If not in localStorage, username not available (blockchain query is complex)
+                    return score;
+                } catch (error) {
+                    console.error('Error fetching username for', score.player, error);
+                    return score;
+                }
+            }));
+
+            console.log('Processed scores with usernames:', scoresWithUsernames);
+            setLeaderboard(scoresWithUsernames);
             setIsLoadingLeaderboard(false);
-            return scores;
+            return scoresWithUsernames;
         } catch (error) {
             console.error('Error fetching leaderboard:', error);
             setIsLoadingLeaderboard(false);
