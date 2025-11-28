@@ -290,7 +290,7 @@ function App() {
                     </div>
                     
                     <h1 className="game-title" data-text="TETRICHAIN">TETRICHAIN</h1>
-                    <p className="game-subtitle">WEB3 TETRIS ON SUI BLOCKCHAIN</p>
+                    <p className="game-subtitle">TETRIS WITH BLOCKCHAIN TECHNOLOGY</p>
                     
                     <div className="landing-buttons">
                         <ConnectButton />
