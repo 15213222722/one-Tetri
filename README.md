@@ -18,8 +18,8 @@ TetriChain is a fully decentralized Tetris game built on the Sui blockchain. Pla
 
 | Platform | Link |
 |----------|------|
-| 🌐 **Live Web App** | [Play TetriChain](#) |
-| 🎥 **YouTube Demo** | [Watch Demo Video](#) |
+| 🌐 **Live Web App** | [https://tetrichain.vercel.app/](https://tetrichain.vercel.app/) |
+| 🎥 **YouTube Demo** | [https://www.youtube.com/watch?v=ZqRBqGTaZiA](https://www.youtube.com/watch?v=ZqRBqGTaZiA) |
 | 📦 **Smart Contract** | [View on SuiScan](https://testnet.suivision.xyz/package/0x9fb6a73cd68dfb1821ab456982e6c9256546a8ecd29cd14bd7b803a2e3c9eb37) |
 
 ---
@@ -277,7 +277,7 @@ TetriChain is a fully decentralized Tetris game built on the Sui blockchain. Pla
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/tetrichain.git
+git clone https://github.com/StrawberryMilk21/tetrichain.git
 cd tetrichain
 ```
 
@@ -306,15 +306,17 @@ PORT=3001
 NODE_ENV=development
 ```
 
-5. **Run the development servers**
+5. **Start the development servers**
 
-**Client** (in `client/` directory):
+Terminal 1 - Start backend:
 ```bash
+cd server
 npm run dev
 ```
 
-**Server** (in `server/` directory):
+Terminal 2 - Start frontend:
 ```bash
+cd client
 npm run dev
 ```
 
@@ -444,7 +446,7 @@ npm run test:watch
 
 ## 👨‍💻 Author
 
-Built with ❤️ by **[Your Name]**
+Built by Kho Chin Ning
 
 Developed using **Kiro IDE** - AI-powered development environment
 
