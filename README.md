@@ -1,6 +1,6 @@
 # 🎮 TetriChain
 
-**A Web3 Tetris Game on Sui Blockchain**
+**A Web3 Tetris Game Implement with Blockchain*
 
 [Features](#-key-features) • [Architecture](#-system-architecture) • [Getting Started](#-getting-started) • [Live Demo](#-live-demo)
 
