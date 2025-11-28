@@ -253,7 +253,28 @@ function App() {
             {/* Landing Screen */}
             {currentScreen === 'landing' && (
                 <div className="landing-screen">
-                    <h1 className="game-title">TETRICHAIN</h1>
+                    {/* Animated Grid with Light Pulses */}
+                    <div className="grid-overlay">
+                        <div className="grid-lines-horizontal"></div>
+                        <div className="grid-lines-vertical"></div>
+                        <div className="light-pulse pulse-1"></div>
+                        <div className="light-pulse pulse-2"></div>
+                        <div className="light-pulse pulse-3"></div>
+                        <div className="light-pulse pulse-4"></div>
+                    </div>
+                    
+                    {/* Floating Tetris Blocks Background */}
+                    <div className="floating-blocks">
+                        <div className="tetris-block block-i"></div>
+                        <div className="tetris-block block-o"></div>
+                        <div className="tetris-block block-t"></div>
+                        <div className="tetris-block block-s"></div>
+                        <div className="tetris-block block-z"></div>
+                        <div className="tetris-block block-j"></div>
+                        <div className="tetris-block block-l"></div>
+                    </div>
+                    
+                    <h1 className="game-title" data-text="TETRICHAIN">TETRICHAIN</h1>
                     <p className="game-subtitle">WEB3 TETRIS ON SUI BLOCKCHAIN</p>
                     
                     <div className="landing-buttons">
@@ -271,6 +292,20 @@ function App() {
             {/* Main Menu Screen */}
             {currentScreen === 'menu' && (
                 <div className="main-menu">
+                    {/* Animated Background for Menu */}
+                    <div className="grid-overlay menu-grid">
+                        <div className="grid-lines-horizontal"></div>
+                        <div className="grid-lines-vertical"></div>
+                        <div className="light-pulse pulse-1"></div>
+                        <div className="light-pulse pulse-3"></div>
+                    </div>
+                    <div className="floating-blocks">
+                        <div className="tetris-block block-i"></div>
+                        <div className="tetris-block block-t"></div>
+                        <div className="tetris-block block-z"></div>
+                        <div className="tetris-block block-l"></div>
+                    </div>
+                    
                     <h1 className="menu-title">TETRICHAIN</h1>
                     
                     {/* Mute Button - Simple style like back button */}
@@ -348,6 +383,19 @@ function App() {
             {/* Solo Game Screen */}
             {currentScreen === 'solo' && (
                 <div className="solo-screen">
+                    {/* Animated Background for Solo */}
+                    <div className="grid-overlay solo-grid">
+                        <div className="grid-lines-horizontal"></div>
+                        <div className="grid-lines-vertical"></div>
+                        <div className="light-pulse pulse-2"></div>
+                        <div className="light-pulse pulse-4"></div>
+                    </div>
+                    <div className="floating-blocks">
+                        <div className="tetris-block block-o"></div>
+                        <div className="tetris-block block-s"></div>
+                        <div className="tetris-block block-j"></div>
+                    </div>
+                    
                     <button 
                         className="btn btn-secondary back-button"
                         onClick={() => {

@@ -43,9 +43,9 @@ button:disabled {
 
 /* Mute Toggle Button - Below UID box at top right */
 .mute-toggle-button {
-    position: fixed;
-    top: 120px;
-    right: 20px;
+    position: fixed !important;
+    top: 120px !important;
+    right: 20px !important;
     background: none;
     border: 2px solid #00f0f0;
     color: #00f0f0;
@@ -54,7 +54,7 @@ button:disabled {
     cursor: pointer;
     font-size: 14px;
     transition: all 0.2s;
-    z-index: 100;
+    z-index: 9999 !important;
 }
 
 .mute-toggle-button:hover {

@@ -36,6 +36,22 @@ export default function CustomizationMenu({ onBack, onSkinSelect }) {
 
     return (
         <div className="customization-menu">
+            {/* Animated Background for Customization */}
+            <div className="grid-overlay customization-grid">
+                <div className="grid-lines-horizontal"></div>
+                <div className="grid-lines-vertical"></div>
+                <div className="light-pulse pulse-1"></div>
+                <div className="light-pulse pulse-2"></div>
+                <div className="light-pulse pulse-3"></div>
+            </div>
+            <div className="floating-blocks">
+                <div className="tetris-block block-i"></div>
+                <div className="tetris-block block-o"></div>
+                <div className="tetris-block block-t"></div>
+                <div className="tetris-block block-s"></div>
+                <div className="tetris-block block-z"></div>
+            </div>
+            
             <div className="customization-header">
                 <button className="back-button" onClick={onBack}>
                     ← BACK

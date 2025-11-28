@@ -166,6 +166,21 @@ export default function MarketplaceView({ onBack }) {
 
     return (
         <div className="marketplace-view">
+            {/* Animated Background for Marketplace */}
+            <div className="grid-overlay marketplace-grid">
+                <div className="grid-lines-horizontal"></div>
+                <div className="grid-lines-vertical"></div>
+                <div className="light-pulse pulse-1"></div>
+                <div className="light-pulse pulse-3"></div>
+                <div className="light-pulse pulse-4"></div>
+            </div>
+            <div className="floating-blocks">
+                <div className="tetris-block block-j"></div>
+                <div className="tetris-block block-l"></div>
+                <div className="tetris-block block-t"></div>
+                <div className="tetris-block block-i"></div>
+            </div>
+            
             <div className="marketplace-header">
                 <button className="back-button" onClick={onBack}>
                     ← BACK

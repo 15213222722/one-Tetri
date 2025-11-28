@@ -1,9 +1,10 @@
 .marketplace-view {
     width: 100%;
-    height: 100vh;
-    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    min-height: 100vh;
     color: white;
     overflow-y: auto;
+    position: relative;
+    /* Background handled by tetrio-theme.css */
 }
 
 .marketplace-header {
@@ -12,6 +13,9 @@
     justify-content: space-between;
     padding: 20px;
     border-bottom: 2px solid #333;
+    position: relative;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.5);
 }
 
 .marketplace-header h1 {
@@ -43,10 +47,10 @@
 
 /* Floating button in bottom right corner */
 .floating-button {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    z-index: 1000;
+    position: fixed !important;
+    bottom: 30px !important;
+    right: 30px !important;
+    z-index: 1000 !important;
     padding: 18px 28px;
     font-size: 18px;
 }

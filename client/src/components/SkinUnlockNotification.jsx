@@ -8,22 +8,32 @@ import './SkinUnlockNotification.css';
 export default function SkinUnlockNotification({ skin, onClose }) {
     const { claimSkinNFT, isSkinClaimed, isLoading, error } = useSkinNFT();
     const [claimed, setClaimed] = useState(false);
+    const [isExiting, setIsExiting] = useState(false);
 
     useEffect(() => {
         if (skin) {
             setClaimed(isSkinClaimed(skin.id));
         }
     }, [skin, isSkinClaimed]);
+    
     useEffect(() => {
-        if (skin && claimed) {
-            // Auto-close after 5 seconds if already claimed
+        if (skin) {
+            // Auto-close after 4 seconds
             const timer = setTimeout(() => {
-                onClose();
-            }, 5000);
+                handleClose();
+            }, 4000);
 
             return () => clearTimeout(timer);
         }
-    }, [skin, claimed, onClose]);
+    }, [skin, onClose]);
+
+    const handleClose = () => {
+        setIsExiting(true);
+        // Wait for animation to complete before actually closing
+        setTimeout(() => {
+            onClose();
+        }, 300); // Match the CSS transition duration
+    };
 
     const handleClaimNFT = async () => {
         try {
@@ -31,7 +41,7 @@ export default function SkinUnlockNotification({ skin, onClose }) {
             setClaimed(true);
             // Auto-close after successful claim
             setTimeout(() => {
-                onClose();
+                handleClose();
             }, 2000);
         } catch (err) {
             console.error('Failed to claim NFT:', err);
@@ -42,7 +52,7 @@ export default function SkinUnlockNotification({ skin, onClose }) {
 
     // Non-intrusive toast notification instead of modal
     return (
-        <div className="skin-unlock-toast" onClick={onClose}>
+        <div className={`skin-unlock-toast ${isExiting ? 'toast-exit' : ''}`} onClick={handleClose}>
             <div className="skin-unlock-toast-content">
                 <div className="skin-unlock-toast-icon">🎉</div>
                 <div className="skin-unlock-toast-text">
