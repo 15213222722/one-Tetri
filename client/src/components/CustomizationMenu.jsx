@@ -7,7 +7,7 @@ import './CustomizationMenu.css';
 /**
  * Customization menu for selecting and claiming skin NFTs
  */
-export default function CustomizationMenu({ gameStats, onBack, onSkinSelect }) {
+export default function CustomizationMenu({ gameStats, onBack, onSkinSelect, t }) {
     const skinUnlocks = useSkinUnlocks(gameStats);
     const skinNFT = useSkinNFT();
     
@@ -54,9 +54,9 @@ export default function CustomizationMenu({ gameStats, onBack, onSkinSelect }) {
             
             <div className="customization-header">
                 <button className="back-button" onClick={onBack}>
-                    ← BACK
+                    {t('backToMenu')}
                 </button>
-                <h1>CUSTOMIZATION</h1>
+                <h1>{t('customization')}</h1>
             </div>
 
             <div className="customization-content">
@@ -89,12 +89,12 @@ export default function CustomizationMenu({ gameStats, onBack, onSkinSelect }) {
                                 </div>
 
                                 <div className="skin-info">
-                                    <h3 className="skin-name">{skin.name}</h3>
-                                    <p className="skin-description">{skin.description}</p>
+                                    <h3 className="skin-name">{t(skin.name)}</h3>
+                                    <p className="skin-description">{t(skin.description)}</p>
                                     
                                     {!isUnlocked && (
                                         <div className="skin-requirement">
-                                            🔒 {skin.unlockCondition?.description || `Reach ${skin.unlockScore?.toLocaleString() || 0} points`}
+                                            🔒 {skin.unlockCondition?.description ? t(skin.unlockCondition.description) : t('unlockScore', { score: skin.unlockScore?.toLocaleString() || 0 })}
                                         </div>
                                     )}
 
@@ -107,19 +107,19 @@ export default function CustomizationMenu({ gameStats, onBack, onSkinSelect }) {
                                             }}
                                             disabled={skinNFT.isLoading}
                                         >
-                                            {skinNFT.isLoading ? 'CLAIMING...' : 'CLAIM AS NFT'}
+                                            {skinNFT.isLoading ? t('claiming') : t('claimAsNFT')}
                                         </button>
                                     )}
 
                                     {isClaimed && (
                                         <div className="nft-claimed">
-                                            ✅ NFT CLAIMED
+                                            ✅ {t('nftClaimedLabel')}
                                         </div>
                                     )}
 
                                     {isSelected && (
                                         <div className="skin-selected">
-                                            ⭐ ACTIVE
+                                            ⭐ {t('active')}
                                         </div>
                                     )}
                                 </div>
@@ -130,7 +130,7 @@ export default function CustomizationMenu({ gameStats, onBack, onSkinSelect }) {
 
                 {skinNFT.error && (
                     <div className="error-message">
-                        ❌ {skinNFT.error}
+                        ❌ {t(skinNFT.error)}
                     </div>
                 )}
             </div>

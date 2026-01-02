@@ -220,9 +220,9 @@ function App() {
     };
 
     // Handle skin selection
-    const handleSelectSkin = (skinId) => {
-        setSelectedSkin(skinId);
-        localStorage.setItem('selectedSkin', skinId.toString());
+    const handleSelectSkin = (skin) => {
+        setSelectedSkin(skin.id);
+        localStorage.setItem('selectedSkin', skin.id.toString());
         showToast('success', t('skinSelected'));
     };
 
@@ -626,10 +626,8 @@ function App() {
                 <CustomizationMenu
                     gameStats={gameStats}
                     onBack={() => setCurrentScreen('menu')}
-                    onSkinSelect={(skin) => {
-                        setSelectedSkin(skin.id);
-                        console.log('Selected skin:', skin);
-                    }}
+                    onSkinSelect={handleSelectSkin}
+                    t={t}
                 />
             )}
 

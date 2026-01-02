@@ -6,9 +6,9 @@
 export const SKINS = [
     {
         id: 0,
-        name: 'Classic',
+        name: 'skins.classic.name',
         unlockScore: 0,
-        description: 'The original Tetris blocks',
+        description: 'skins.classic.description',
         colors: {
             1: '#00f0f0', // I - Cyan
             2: '#f0f000', // O - Yellow
@@ -22,9 +22,9 @@ export const SKINS = [
     },
     {
         id: 1,
-        name: 'Neon Block',
+        name: 'skins.neon_block.name',
         unlockScore: 1000,
-        description: 'Glowing neon colors for cyberpunk vibes',
+        description: 'skins.neon_block.description',
         colors: {
             1: '#00ffff', // I - Bright Cyan
             2: '#ffff00', // O - Bright Yellow
@@ -38,9 +38,9 @@ export const SKINS = [
     },
     {
         id: 2,
-        name: 'Galaxy Block',
+        name: 'skins.galaxy_block.name',
         unlockScore: 5000,
-        description: 'Cosmic colors from distant galaxies',
+        description: 'skins.galaxy_block.description',
         colors: {
             1: '#4a0e4e', // I - Deep Purple
             2: '#ffd700', // O - Gold
@@ -54,9 +54,9 @@ export const SKINS = [
     },
     {
         id: 3,
-        name: 'Diamond Block',
+        name: 'skins.diamond_block.name',
         unlockScore: 10000,
-        description: 'Precious gem-like blocks for elite players',
+        description: 'skins.diamond_block.description',
         colors: {
             1: '#b9f2ff', // I - Diamond Blue
             2: '#fffacd', // O - Lemon Chiffon
@@ -70,9 +70,9 @@ export const SKINS = [
     },
     {
         id: 4,
-        name: 'Ocean Depths',
+        name: 'skins.ocean_depths.name',
         unlockScore: 0,
-        description: 'Deep sea blues and aquatic tones',
+        description: 'skins.ocean_depths.description',
         colors: {
             1: '#006994', // I - Deep Ocean Blue
             2: '#008b8b', // O - Dark Cyan
@@ -82,13 +82,13 @@ export const SKINS = [
             6: '#4169e1', // J - Royal Blue
             7: '#87ceeb', // L - Sky Blue
         },
-        unlockCondition: { type: 'level', value: 5, description: 'Reach Level 5' }
+        unlockCondition: { type: 'level', value: 5, description: 'skins.ocean_depths.unlock_description' }
     },
     {
         id: 5,
-        name: 'Sunset Blaze',
+        name: 'skins.sunset_blaze.name',
         unlockScore: 0,
-        description: 'Warm sunset and fire colors',
+        description: 'skins.sunset_blaze.description',
         colors: {
             1: '#ff4500', // I - Orange Red
             2: '#ff6347', // O - Tomato
@@ -98,13 +98,13 @@ export const SKINS = [
             6: '#ffd700', // J - Gold
             7: '#ffb347', // L - Sandy Brown
         },
-        unlockCondition: { type: 'lines', value: 50, description: 'Clear 50 Lines' }
+        unlockCondition: { type: 'lines', value: 50, description: 'skins.sunset_blaze.unlock_description' }
     },
     {
         id: 6,
-        name: 'Forest Grove',
+        name: 'skins.forest_grove.name',
         unlockScore: 0,
-        description: 'Natural green forest shades',
+        description: 'skins.forest_grove.description',
         colors: {
             1: '#228b22', // I - Forest Green
             2: '#32cd32', // O - Lime Green
@@ -114,13 +114,13 @@ export const SKINS = [
             6: '#3cb371', // J - Medium Sea Green
             7: '#90ee90', // L - Light Green
         },
-        unlockCondition: { type: 'lines', value: 100, description: 'Clear 100 Lines' }
+        unlockCondition: { type: 'lines', value: 100, description: 'skins.forest_grove.unlock_description' }
     },
     {
         id: 7,
-        name: 'Royal Purple',
+        name: 'skins.royal_purple.name',
         unlockScore: 0,
-        description: 'Majestic purple and violet hues',
+        description: 'skins.royal_purple.description',
         colors: {
             1: '#4b0082', // I - Indigo
             2: '#663399', // O - Rebecca Purple
@@ -130,13 +130,13 @@ export const SKINS = [
             6: '#da70d6', // J - Orchid
             7: '#dda0dd', // L - Plum
         },
-        unlockCondition: { type: 'level', value: 8, description: 'Reach Level 8' }
+        unlockCondition: { type: 'level', value: 8, description: 'skins.royal_purple.unlock_description' }
     },
     {
         id: 8,
-        name: 'Cyber Matrix',
+        name: 'skins.cyber_matrix.name',
         unlockScore: 0,
-        description: 'Digital matrix green theme',
+        description: 'skins.cyber_matrix.description',
         colors: {
             1: '#00ff41', // I - Matrix Green
             2: '#39ff14', // O - Neon Green
@@ -146,13 +146,13 @@ export const SKINS = [
             6: '#9aff9a', // J - Light Green
             7: '#98fb98', // L - Pale Green
         },
-        unlockCondition: { type: 'combo', value: 4, description: 'Get a 4x Combo' }
+        unlockCondition: { type: 'combo', value: 4, description: 'skins.cyber_matrix.unlock_description' }
     },
     {
         id: 9,
-        name: 'Volcanic Fire',
+        name: 'skins.volcanic_fire.name',
         unlockScore: 0,
-        description: 'Hot lava and molten rock colors',
+        description: 'skins.volcanic_fire.description',
         colors: {
             1: '#8b0000', // I - Dark Red
             2: '#b22222', // O - Fire Brick
@@ -162,13 +162,13 @@ export const SKINS = [
             6: '#ff6347', // J - Tomato
             7: '#ff8c00', // L - Dark Orange
         },
-        unlockCondition: { type: 'level', value: 10, description: 'Reach Level 10' }
+        unlockCondition: { type: 'level', value: 10, description: 'skins.volcanic_fire.unlock_description' }
     },
     {
         id: 10,
-        name: 'Arctic Ice',
+        name: 'skins.arctic_ice.name',
         unlockScore: 0,
-        description: 'Cool arctic and frozen tones',
+        description: 'skins.arctic_ice.description',
         colors: {
             1: '#e0ffff', // I - Light Cyan
             2: '#b0e0e6', // O - Powder Blue
@@ -178,13 +178,13 @@ export const SKINS = [
             6: '#00bfff', // J - Deep Sky Blue
             7: '#1e90ff', // L - Dodger Blue
         },
-        unlockCondition: { type: 'lines', value: 200, description: 'Clear 200 Lines' }
+        unlockCondition: { type: 'lines', value: 200, description: 'skins.arctic_ice.unlock_description' }
     },
     {
         id: 11,
-        name: 'Golden Treasure',
+        name: 'skins.golden_treasure.name',
         unlockScore: 25000,
-        description: 'Luxurious gold and bronze tones',
+        description: 'skins.golden_treasure.description',
         colors: {
             1: '#ffd700', // I - Gold
             2: '#ffdf00', // O - Golden Yellow
@@ -198,9 +198,9 @@ export const SKINS = [
     },
     {
         id: 12,
-        name: 'Cosmic Galaxy',
+        name: 'skins.cosmic_galaxy.name',
         unlockScore: 0,
-        description: 'Deep space and nebula colors',
+        description: 'skins.cosmic_galaxy.description',
         colors: {
             1: '#191970', // I - Midnight Blue
             2: '#483d8b', // O - Dark Slate Blue
@@ -210,13 +210,13 @@ export const SKINS = [
             6: '#8a2be2', // J - Blue Violet
             7: '#9932cc', // L - Dark Orchid
         },
-        unlockCondition: { type: 'level', value: 12, description: 'Reach Level 12' }
+        unlockCondition: { type: 'level', value: 12, description: 'skins.cosmic_galaxy.unlock_description' }
     },
     {
         id: 13,
-        name: 'Cherry Blossom',
+        name: 'skins.cherry_blossom.name',
         unlockScore: 0,
-        description: 'Soft pink and spring colors',
+        description: 'skins.cherry_blossom.description',
         colors: {
             1: '#ffb7c5', // I - Cherry Blossom Pink
             2: '#ffc0cb', // O - Pink
@@ -226,13 +226,13 @@ export const SKINS = [
             6: '#db7093', // J - Pale Violet Red
             7: '#c71585', // L - Medium Violet Red
         },
-        unlockCondition: { type: 'tetris', value: 5, description: 'Clear 5 Tetrises' }
+        unlockCondition: { type: 'tetris', value: 5, description: 'skins.cherry_blossom.unlock_description' }
     },
     {
         id: 14,
-        name: 'Midnight Shadow',
+        name: 'skins.midnight_shadow.name',
         unlockScore: 0,
-        description: 'Dark and mysterious tones',
+        description: 'skins.midnight_shadow.description',
         colors: {
             1: '#2f4f4f', // I - Dark Slate Gray
             2: '#36454f', // O - Charcoal
@@ -242,13 +242,13 @@ export const SKINS = [
             6: '#28282b', // J - Raisin Black
             7: '#1c1c1c', // L - Eerie Black
         },
-        unlockCondition: { type: 'combo', value: 6, description: 'Get a 6x Combo' }
+        unlockCondition: { type: 'combo', value: 6, description: 'skins.midnight_shadow.unlock_description' }
     },
     {
         id: 15,
-        name: 'Rainbow Prism',
+        name: 'skins.rainbow_prism.name',
         unlockScore: 50000,
-        description: 'Vibrant rainbow spectrum',
+        description: 'skins.rainbow_prism.description',
         colors: {
             1: '#ff0000', // I - Red
             2: '#ff7f00', // O - Orange
@@ -262,9 +262,9 @@ export const SKINS = [
     },
     {
         id: 16,
-        name: 'Autumn Harvest',
+        name: 'skins.autumn_harvest.name',
         unlockScore: 0,
-        description: 'Warm autumn and harvest colors',
+        description: 'skins.autumn_harvest.description',
         colors: {
             1: '#d2691e', // I - Chocolate
             2: '#cd853f', // O - Peru
@@ -274,13 +274,13 @@ export const SKINS = [
             6: '#8b4513', // J - Saddle Brown
             7: '#a0522d', // L - Sienna
         },
-        unlockCondition: { type: 'lines', value: 300, description: 'Clear 300 Lines' }
+        unlockCondition: { type: 'lines', value: 300, description: 'skins.autumn_harvest.unlock_description' }
     },
     {
         id: 17,
-        name: 'Electric Storm',
+        name: 'skins.electric_storm.name',
         unlockScore: 0,
-        description: 'Lightning and storm colors',
+        description: 'skins.electric_storm.description',
         colors: {
             1: '#00ffff', // I - Cyan
             2: '#00e5ff', // O - Bright Cyan
@@ -290,13 +290,13 @@ export const SKINS = [
             6: '#6600ff', // J - Purple
             7: '#9900ff', // L - Violet
         },
-        unlockCondition: { type: 'tetris', value: 10, description: 'Clear 10 Tetrises' }
+        unlockCondition: { type: 'tetris', value: 10, description: 'skins.electric_storm.unlock_description' }
     },
     {
         id: 18,
-        name: 'Candy Land',
+        name: 'skins.candy_land.name',
         unlockScore: 0,
-        description: 'Sweet candy colors',
+        description: 'skins.candy_land.description',
         colors: {
             1: '#ff69b4', // I - Hot Pink
             2: '#ffb6c1', // O - Light Pink
@@ -306,13 +306,13 @@ export const SKINS = [
             6: '#da70d6', // J - Orchid
             7: '#ee82ee', // L - Violet
         },
-        unlockCondition: { type: 'level', value: 15, description: 'Reach Level 15' }
+        unlockCondition: { type: 'level', value: 15, description: 'skins.candy_land.unlock_description' }
     },
     {
         id: 19,
-        name: 'Legendary Master',
+        name: 'skins.legendary_master.name',
         unlockScore: 100000,
-        description: 'Ultimate skin for true masters',
+        description: 'skins.legendary_master.description',
         colors: {
             1: '#ffd700', // I - Gold
             2: '#ffdf00', // O - Golden
