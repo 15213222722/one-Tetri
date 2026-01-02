@@ -168,5 +168,9 @@
     "nftClaimedLabel": "NFT CLAIMED",
     "active": "ACTIVE",
     "unlockScore": "Reach {{score}} points",
-    "claiming": "CLAIMING..."
+    "claiming": "CLAIMING...",
+    "skins.neon.unlock": "Achieve a 10-combo in a multiplayer game",
+    "skins.classic.unlock": "Unlocked by default",
+    "skinUnlocked": "{{skinName}} Unlocked!",
+    "visitCustomizationToClaim": "Visit Customization to claim as NFT"
 }

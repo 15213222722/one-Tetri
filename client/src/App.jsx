@@ -678,6 +678,7 @@ function App() {
             <SkinUnlockNotification
                 skin={skinUnlocks.newlyUnlocked}
                 onClose={skinUnlocks.clearNotification}
+                t={t}
             />
         </div>
     );

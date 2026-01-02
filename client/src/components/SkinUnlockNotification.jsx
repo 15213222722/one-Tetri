@@ -5,7 +5,7 @@ import './SkinUnlockNotification.css';
 /**
  * Notification component that appears when a new skin is unlocked
  */
-export default function SkinUnlockNotification({ skin, onClose }) {
+export default function SkinUnlockNotification({ skin, onClose, t }) {
     const { claimSkinNFT, isSkinClaimed, isLoading, error } = useSkinNFT();
     const [claimed, setClaimed] = useState(false);
     const [isExiting, setIsExiting] = useState(false);
@@ -56,8 +56,8 @@ export default function SkinUnlockNotification({ skin, onClose }) {
             <div className="skin-unlock-toast-content">
                 <div className="skin-unlock-toast-icon">🎉</div>
                 <div className="skin-unlock-toast-text">
-                    <strong>{skin.name} Unlocked!</strong>
-                    <span>Visit Customization to claim as NFT</span>
+                    <strong>{t('skinUnlocked', { skinName: t(skin.name) })}</strong>
+                    <span>{t('visitCustomizationToClaim')}</span>
                 </div>
                 <div className="skin-unlock-toast-colors">
                     {Object.values(skin.colors).slice(0, 4).map((color, i) => (

@@ -111,8 +111,6 @@
     "priceInTetriPlaceholder": "TETRI价格（例如：1000）",
     "back": "返回",
     "listing": "上架中...",
-    "skins.classic.name": "经典",
-    "skins.classic.description": "原始的俄罗斯方块颜色。",
     "skins.neon_block.name": "霓虹方块",
     "skins.neon_block.description": "明亮、发光的方块，带来复古未来感。",
     "skins.galaxy_block.name": "银河方块",
@@ -168,5 +166,11 @@
     "nftClaimedLabel": "已领取NFT",
     "active": "当前",
     "unlockScore": "达到 {{score}} 分",
-    "claiming": "领取中..."
+    "claiming": "领取中...",
+    "skins.neon.unlock": "在多人游戏中获得一次 10 连击",
+    "skins.classic.name": "经典",
+    "skins.classic.description": "默认皮肤",
+    "skins.classic.unlock": "默认解锁",
+    "skinUnlocked": "{{skinName}} 已解锁！",
+    "visitCustomizationToClaim": "访问“定制”以领取 NFT"
 }
