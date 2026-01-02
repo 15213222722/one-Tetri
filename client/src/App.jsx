@@ -21,6 +21,8 @@ import { useMultiplayerBattle } from './hooks/useMultiplayerBattle.js';
 import { useSkinUnlocks } from './hooks/useSkinUnlocks.js';
 import { useSound } from './hooks/useSound.js';
 import { getSkinById } from './skinConfig.js';
+import en from './locales/en.json';
+import zh from './locales/zh.json';
 import "./App.css";
 
 // Authentication states
@@ -46,11 +48,24 @@ function App() {
         return parseInt(localStorage.getItem('selectedSkin') || '0');
     });
     const [isClaimingSkin, setIsClaimingSkin] = useState(false);
-    
+    const [language, setLanguage] = useState('zh');
+
+    const toggleLanguage = () => {
+        setLanguage(prev => prev === 'en' ? 'zh' : 'en');
+    };
+
+    const t = useMemo(() => {
+        const texts = {
+            en,
+            zh
+        };
+        return (key) => texts[language][key] || key;
+    }, [language]);
+
     const game = useGame(gameSeed);
     const blockchain = useBlockchain();
     const sound = useSound();
-    
+
     // Memoize game stats for skin unlock system
     const gameStats = useMemo(() => ({
         score: game.gameState.score,
@@ -65,10 +80,10 @@ function App() {
         game.gameState.tetrisCount,
         game.gameState.maxCombo
     ]);
-    
+
     // Skin unlock system
     const skinUnlocks = useSkinUnlocks(gameStats);
-    
+
     // Multiplayer hooks
     const webSocket = useWebSocket(blockchain.account?.address, blockchain.username);
     const battleFlow = useBattleFlow(webSocket.socket, blockchain.account?.address, blockchain.username);
@@ -77,7 +92,7 @@ function App() {
         battleFlow.roomData,
         battleFlow.opponentData
     );
-    
+
     // Handle wallet connection state transitions
     useEffect(() => {
         if (!blockchain.account) {
@@ -145,7 +160,7 @@ function App() {
             setGameSeedObjectId(result.gameSeedObjectId);
             setGameSeed(result.seed);
             showToast('success', 'Game seed created! Your game is provably fair.');
-            
+
             game.startGame();
             setGameMode('playing');
         } catch (error) {
@@ -172,14 +187,14 @@ function App() {
             setLoadingMessage('Submitting score to blockchain...');
             const result = await blockchain.submitScore(gameSeedObjectId, game.gameState.score);
             showToast('success', `Score submitted! You earned ${result.tokensEarned} TETRI tokens!`);
-            
+
             // Wait a bit for blockchain to process, then refresh data
             setLoadingMessage('Updating leaderboard and balance...');
             await new Promise(resolve => setTimeout(resolve, 2000)); // 2 second delay
-            
+
             await blockchain.fetchLeaderboard();
             await blockchain.fetchPlayerBalance();
-            
+
             setLoadingMessage('');
         } catch (error) {
             console.error('Failed to submit score:', error);
@@ -225,41 +240,60 @@ function App() {
 
     return (
         <div className="app">
-            {/* Wallet Info in Corner */}
-            {blockchain.account && currentScreen !== 'landing' && (
-                <div className="wallet-info-corner">
-                    <span className="wallet-label">UID:</span>
-                    <span className="wallet-address-short">
-                        {blockchain.account.address.slice(0, 6)}...{blockchain.account.address.slice(-4)}
-                    </span>
-                </div>
-            )}
+            <div className="top-right-container">
+                {/* Language Toggle Button */}
+                {currentScreen !== 'landing' && (
+                    <button onClick={toggleLanguage} className="language-toggle-button">
+                        {language === 'en' ? '中文' : 'English'}
+                    </button>
+                )}
+
+                {/* Mute Button */}
+                {currentScreen !== 'landing' && (
+                    <button 
+                        className="mute-toggle-button"
+                        onClick={sound.toggleMute}
+                    >
+                        {sound.isMuted ? t('soundOff') : t('soundOn')}
+                    </button>
+                )}
+
+                {/* Wallet Info in Corner */}
+                {blockchain.account && currentScreen !== 'landing' && (
+                    <div className="wallet-info-corner">
+                        <span className="wallet-label">{t('uid')}</span>
+                        <span className="wallet-address-short">
+                            {blockchain.account.address.slice(0, 6)}...{blockchain.account.address.slice(-4)}
+                        </span>
+                    </div>
+                )}
+            </div>
 
             {/* Tutorial Modal */}
             {showTutorial && (
                 <div className="tutorial-overlay" onClick={() => setShowTutorial(false)}>
                     <div className="tutorial-modal" onClick={(e) => e.stopPropagation()}>
                         <button className="tutorial-close" onClick={() => setShowTutorial(false)}>×</button>
-                        <h2>HOW TO PLAY</h2>
+                        <h2>{t('howToPlay')}</h2>
                         <div className="tutorial-content">
-                            <h3>CONTROLS</h3>
-                            <p><kbd>←</kbd> <kbd>→</kbd> Move piece left/right</p>
-                            <p><kbd>↑</kbd> Rotate piece</p>
-                            <p><kbd>↓</kbd> Soft drop (faster fall)</p>
-                            <p><kbd>SPACE</kbd> Hard drop (instant fall)</p>
-                            <p><kbd>P</kbd> Pause/Resume</p>
-                            
-                            <h3>GAMEPLAY</h3>
-                            <p>• Clear lines by filling rows completely</p>
-                            <p>• Score increases with each line cleared</p>
-                            <p>• Level up every 10 lines (game speeds up)</p>
-                            <p>• Game over when pieces stack to the top</p>
-                            
-                            <h3>BLOCKCHAIN</h3>
-                            <p>• Connect wallet to record scores on-chain</p>
-                            <p>• Each game gets a provably fair seed</p>
-                            <p>• Submit scores to earn TETRI tokens</p>
-                            <p>• Compete on the global leaderboard</p>
+                            <h3>{t('controls')}</h3>
+                            <p><kbd>←</kbd> <kbd>→</kbd> {t('movePiece')}</p>
+                            <p><kbd>↑</kbd> {t('rotatePiece')}</p>
+                            <p><kbd>↓</kbd> {t('softDrop')}</p>
+                            <p><kbd>SPACE</kbd> {t('hardDrop')}</p>
+                            <p><kbd>P</kbd> {t('pauseResume')}</p>
+
+                            <h3>{t('gameplay')}</h3>
+                            <p>• {t('clearLines')}</p>
+                            <p>• {t('scoreIncreases')}</p>
+                            <p>• {t('levelUp')}</p>
+                            <p>• {t('gameOverCondition')}</p>
+
+                            <h3>{t('blockchain')}</h3>
+                            <p>• {t('connectWallet')}</p>
+                            <p>• {t('fairSeed')}</p>
+                            <p>• {t('submitScores')}</p>
+                            <p>• {t('competeLeaderboard')}</p>
                         </div>
                     </div>
                 </div>
@@ -277,7 +311,7 @@ function App() {
                         <div className="light-pulse pulse-3"></div>
                         <div className="light-pulse pulse-4"></div>
                     </div>
-                    
+
                     {/* Floating Tetris Blocks Background */}
                     <div className="floating-blocks">
                         <div className="tetris-block block-i"></div>
@@ -288,17 +322,17 @@ function App() {
                         <div className="tetris-block block-j"></div>
                         <div className="tetris-block block-l"></div>
                     </div>
-                    
-                    <h1 className="game-title" data-text="TETRICHAIN">TETRICHAIN</h1>
-                    <p className="game-subtitle">TETRIS WITH BLOCKCHAIN TECHNOLOGY</p>
-                    
+
+                    <h1 className="game-title" data-text="TETRICHAIN">{t('gameTitle')}</h1>
+                    <p className="game-subtitle">{t('gameSubtitle')}</p>
+
                     <div className="landing-buttons">
                         <ConnectButton />
-                        <button 
+                        <button
                             className="btn btn-secondary tutorial-btn"
                             onClick={() => setShowTutorial(true)}
                         >
-                            HOW TO PLAY
+                            {t('howToPlay')}
                         </button>
                     </div>
                 </div>
@@ -320,19 +354,11 @@ function App() {
                         <div className="tetris-block block-z"></div>
                         <div className="tetris-block block-l"></div>
                     </div>
-                    
+
                     <h1 className="menu-title">TETRICHAIN</h1>
-                    
-                    {/* Mute Button - Simple style like back button */}
-                    <button 
-                        className="mute-toggle-button"
-                        onClick={sound.toggleMute}
-                    >
-                        {sound.isMuted ? '🔇 SOUND OFF' : '🔊 SOUND ON'}
-                    </button>
-                    
+
                     <div className="menu-options">
-                        <button 
+                        <button
                             className="menu-button solo-button"
                             onMouseEnter={() => sound.playHoverSound()}
                             onClick={() => {
@@ -342,12 +368,12 @@ function App() {
                         >
                             <div className="menu-button-icon">1P</div>
                             <div className="menu-button-content">
-                                <div className="menu-button-title">SOLO</div>
-                                <div className="menu-button-subtitle">CHALLENGE YOURSELF AND TOP THE LEADERBOARDS</div>
+                                <div className="menu-button-title">{t('solo')}</div>
+                                <div className="menu-button-subtitle">{t('soloDesc')}</div>
                             </div>
                         </button>
 
-                        <button 
+                        <button
                             className="menu-button multiplayer-button"
                             onMouseEnter={() => sound.playHoverSound()}
                             onClick={() => {
@@ -357,12 +383,12 @@ function App() {
                         >
                             <div className="menu-button-icon">MP</div>
                             <div className="menu-button-content">
-                                <div className="menu-button-title">MULTIPLAYER</div>
-                                <div className="menu-button-subtitle">COMING SOON - PLAY ONLINE WITH FRIENDS</div>
+                                <div className="menu-button-title">{t('multiplayer')}</div>
+                                <div className="menu-button-subtitle">{t('multiplayerDesc')}</div>
                             </div>
                         </button>
 
-                        <button 
+                        <button
                             className="menu-button config-button"
                             onMouseEnter={() => sound.playHoverSound()}
                             onClick={() => {
@@ -372,12 +398,12 @@ function App() {
                         >
                             <div className="menu-button-icon">🎨</div>
                             <div className="menu-button-content">
-                                <div className="menu-button-title">CUSTOMIZATION</div>
-                                <div className="menu-button-subtitle">UNLOCK AND CLAIM BLOCK SKINS AS NFTS</div>
+                                <div className="menu-button-title">{t('customization')}</div>
+                                <div className="menu-button-subtitle">{t('customizationDesc')}</div>
                             </div>
                         </button>
 
-                        <button 
+                        <button
                             className="menu-button marketplace-button"
                             onMouseEnter={() => sound.playHoverSound()}
                             onClick={() => {
@@ -387,8 +413,8 @@ function App() {
                         >
                             <div className="menu-button-icon">🛒</div>
                             <div className="menu-button-content">
-                                <div className="menu-button-title">MARKETPLACE</div>
-                                <div className="menu-button-subtitle">TRADE SKIN NFTS WITH OTHER PLAYERS</div>
+                                <div className="menu-button-title">{t('marketplace')}</div>
+                                <div className="menu-button-subtitle">{t('marketplaceDesc')}</div>
                             </div>
                         </button>
                     </div>
@@ -410,77 +436,77 @@ function App() {
                         <div className="tetris-block block-s"></div>
                         <div className="tetris-block block-j"></div>
                     </div>
-                    
-                    <button 
+
+                    <button
                         className="btn btn-secondary back-button"
                         onClick={() => {
                             setCurrentScreen('menu');
                             setGameMode('menu');
                         }}
                     >
-                        ← BACK TO MENU
+                        {t('backToMenu')}
                     </button>
-                    
+
                     <div className="main-content">
                         <div className="game-section">
                             {gameMode === 'menu' && (
                                 <div className="menu-screen">
-                                    <h2>READY TO PLAY?</h2>
+                                    <h2>{t('readyToPlay')}</h2>
                                     {!blockchain.account ? (
                                         <div className="wallet-required">
-                                            <p className="status-message error">⚠️ WALLET CONNECTION REQUIRED</p>
-                                            <p className="wallet-required-text">You must connect your wallet to play TetriChain</p>
+                                            <p className="status-message error">{t('walletRequired')}</p>
+                                            <p className="wallet-required-text">{t('walletRequiredText')}</p>
                                             <ConnectButton />
                                         </div>
                                     ) : (
                                         <>
                                             <p className="status-message connected">
-                                                ✓ WALLET CONNECTED - READY TO PLAY!
+                                                {t('walletConnected')}
                                             </p>
-                                            <button 
-                                                onClick={handleStartGame} 
+                                            <button
+                                                onClick={handleStartGame}
                                                 className="btn btn-primary start-button"
                                                 disabled={blockchain.isCreatingGameSeed}
                                             >
-                                                {blockchain.isCreatingGameSeed ? 'CREATING GAME SEED...' : 'START GAME'}
+                                                {blockchain.isCreatingGameSeed ? t('creatingGameSeed') : t('startGame')}
                                             </button>
                                         </>
                                     )}
                                     <div className="controls-info">
-                                        <h3>CONTROLS</h3>
-                                        <p><span>Move Left</span> <kbd>←</kbd></p>
-                                        <p><span>Move Right</span> <kbd>→</kbd></p>
-                                        <p><span>Rotate</span> <kbd>↑</kbd></p>
-                                        <p><span>Soft Drop</span> <kbd>↓</kbd></p>
-                                        <p><span>Hard Drop</span> <kbd>SPACE</kbd></p>
-                                        <p><span>Pause</span> <kbd>P</kbd></p>
+                                        <h3>{t('controls')}</h3>
+                                        <p><span>{t('moveLeft')}</span> <kbd>←</kbd></p>
+                                        <p><span>{t('moveRight')}</span> <kbd>→</kbd></p>
+                                        <p><span>{t('rotate')}</span> <kbd>↑</kbd></p>
+                                        <p><span>{t('softDropControl')}</span> <kbd>↓</kbd></p>
+                                        <p><span>{t('hardDropControl')}</span> <kbd>SPACE</kbd></p>
+                                        <p><span>{t('pause')}</span> <kbd>P</kbd></p>
                                     </div>
                                 </div>
                             )}
 
                             {gameMode === 'playing' && (
                                 <>
-                                    <GameInfo 
+                                    <GameInfo
                                         score={game.gameState.score}
                                         level={game.gameState.level}
                                         lines={game.gameState.linesCleared}
                                         isPaused={game.gameState.isPaused}
                                         onPause={game.togglePause}
                                     />
-                                    
+
                                     <div className="game-area-with-previews">
                                         {/* HOLD */}
                                         <div className="hold-container">
-                                            <div className="preview-label">HOLD</div>
-                                            <PiecePreview 
+                                            <div className="preview-label">{t('hold')}</div>
+                                            <PiecePreview
                                                 pieceType={game.gameState.holdPiece?.type}
                                                 skinColors={getSkinById(selectedSkin).colors}
                                             />
-                                            <div className="preview-hint">Press C</div>
+                                            <div className="preview-hint">{t('pressC')}</div>
                                         </div>
 
                                         {/* GAME BOARD */}
-                                        <GameBoard 
+                                        <GameBoard
                                             grid={game.gameState.grid}
                                             currentPiece={game.gameState.currentPiece}
                                             ghostPiece={game.gameState.ghostPiece}
@@ -492,10 +518,10 @@ function App() {
 
                                         {/* NEXT */}
                                         <div className="next-container">
-                                            <div className="preview-label">NEXT</div>
+                                            <div className="preview-label">{t('next')}</div>
                                             {game.gameState.nextQueue && game.gameState.nextQueue.slice(0, 4).map((type, i) => (
-                                                <PiecePreview 
-                                                    key={i} 
+                                                <PiecePreview
+                                                    key={i}
                                                     pieceType={type}
                                                     skinColors={getSkinById(selectedSkin).colors}
                                                 />
@@ -507,20 +533,20 @@ function App() {
 
                             {gameMode === 'gameOver' && (
                                 <div className="game-over">
-                                    <h2>Game Over!</h2>
-                                    <p>Final Score: <span>{game.gameState.score.toLocaleString()}</span></p>
+                                    <h2>{t('gameOver')}</h2>
+                                    <p>{t('finalScore')} <span>{game.gameState.score.toLocaleString()}</span></p>
                                     <div className="game-over-actions">
                                         {blockchain.account && gameSeedObjectId && (
-                                            <button 
-                                                onClick={handleSubmitScore} 
+                                            <button
+                                                onClick={handleSubmitScore}
                                                 className="btn btn-primary"
                                                 disabled={blockchain.isSubmittingScore}
                                             >
-                                                {blockchain.isSubmittingScore ? 'SUBMITTING...' : 'SUBMIT TO BLOCKCHAIN'}
+                                                {blockchain.isSubmittingScore ? t('submitting') : t('submitToBlockchain')}
                                             </button>
                                         )}
                                         <button onClick={handlePlayAgain} className="btn btn-secondary">
-                                            PLAY AGAIN
+                                            {t('playAgain')}
                                         </button>
                                     </div>
                                 </div>
@@ -528,13 +554,13 @@ function App() {
                         </div>
 
                         <div className="blockchain-section">
-                            <WalletStatus 
+                            <WalletStatus
                                 account={blockchain.account}
                                 balance={blockchain.playerBalance}
                                 isLoadingBalance={blockchain.isLoadingBalance}
                                 onRefreshBalance={blockchain.fetchPlayerBalance}
                             />
-                            <Leaderboard 
+                            <Leaderboard
                                 scores={blockchain.leaderboard}
                                 currentPlayerAddress={blockchain.account?.address}
                                 isLoading={blockchain.isLoadingLeaderboard}
@@ -551,7 +577,7 @@ function App() {
             {/* Multiplayer Screen */}
             {currentScreen === 'multiplayer' && (
                 <div className="multiplayer-screen">
-                    <button 
+                    <button
                         className="btn btn-secondary back-button"
                         onClick={() => {
                             battleFlow.resetBattle();
@@ -560,7 +586,7 @@ function App() {
                     >
                         ← BACK TO MENU
                     </button>
-                    
+
                     {/* Show Battle View if in battle */}
                     {battleFlow.battleState === 'playing' && battleFlow.roomData ? (
                         <BattleView
@@ -624,14 +650,14 @@ function App() {
             )}
 
             {/* Loading Overlay */}
-            {(blockchain.isCreatingGameSeed || blockchain.isSubmittingScore || 
+            {(blockchain.isCreatingGameSeed || blockchain.isSubmittingScore ||
               authState === AUTH_STATES.VERIFYING) && (
                 <LoadingOverlay message={authState === AUTH_STATES.VERIFYING ? authMessage : loadingMessage} />
             )}
 
             {/* Toast Notifications */}
             {toast.show && (
-                <Toast 
+                <Toast
                     type={toast.type}
                     message={toast.message}
                     onClose={() => setToast({ ...toast, show: false })}
