@@ -6,7 +6,7 @@
  */
 
 // OneChain Testnet Configuration (Sui-compatible)
-export const NETWORK = import.meta.env.NETWORK;
+export const NETWORK = import.meta.env.VITE_NETWORK;
 export const RPC_URL = import.meta.env.VITE_RPC_URL;
 
 // WebSocket Server Configuration

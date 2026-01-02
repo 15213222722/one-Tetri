@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { ConnectButton } from '@mysten/dapp-kit';
+import { ConnectButton } from '@onelabs/dapp-kit';
 import GameBoard from './components/GameBoard.jsx';
 import GameInfo from './components/GameInfo.jsx';
 import PiecePreview from './components/PiecePreview.jsx';

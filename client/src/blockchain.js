@@ -9,9 +9,9 @@
  * - Token balance queries
  */
 
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { Transaction } from '@mysten/sui/transactions';
+import { SuiClient } from '@onelabs/sui.js/client';
+import { TransactionBlock } from '@onelabs/sui/transactions';
+import { Transaction } from '@onelabs/sui/transactions';
 import { CONTRACT_CONFIG, RPC_URL, TX_CONFIG, NETWORK } from './config.js';
 
 /**

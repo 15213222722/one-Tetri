@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
-import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from '@mysten/dapp-kit';
-import { Transaction } from '@mysten/sui/transactions';
-import { bcs } from '@mysten/sui/bcs';
+import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from '@onelabs/dapp-kit';
+import { Transaction } from '@onelabs/sui/transactions';
+import { bcs } from '@onelabs/sui/bcs';
 import { CONTRACT_CONFIG, TX_CONFIG } from '../config.js';
 
 /**

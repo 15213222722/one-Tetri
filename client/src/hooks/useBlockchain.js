@@ -1,6 +1,6 @@
-import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from '@mysten/dapp-kit';
-import { Transaction } from '@mysten/sui/transactions';
-import { bcs } from '@mysten/sui/bcs';
+import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from '@onelabs/dapp-kit';
+import { Transaction } from '@onelabs/sui/transactions';
+import { bcs } from '@onelabs/sui/bcs';
 import { useState, useCallback, useEffect } from 'react';
 import { CONTRACT_CONFIG, TX_CONFIG } from '../config.js';
 
@@ -91,7 +91,10 @@ export const useBlockchain = () => {
 
             const tx = new Transaction();
             tx.setSender(account.address);
-            
+            console.log('create_game_seed packageId:', CONTRACT_CONFIG.packageId);
+            console.log('create_game_seed moduleName:', CONTRACT_CONFIG.moduleName);
+            console.log('create_game_seed randomId:', CONTRACT_CONFIG.randomId);
+            console.log('create_game_seed clockId:', CONTRACT_CONFIG.clockId);
             tx.moveCall({
                 target: `${CONTRACT_CONFIG.packageId}::${CONTRACT_CONFIG.moduleName}::create_game_seed`,
                 arguments: [

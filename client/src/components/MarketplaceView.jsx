@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSuiClient } from '@mysten/dapp-kit';
+import { useSuiClient } from '@onelabs/dapp-kit';
 import { useSkinNFT } from '../hooks/useSkinNFT.js';
 import { getSkinById } from '../skinConfig.js';
 import { CONTRACT_CONFIG } from '../config.js';
