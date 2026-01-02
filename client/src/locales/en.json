@@ -49,5 +49,22 @@
     "finalScore": "Final Score:",
     "submitting": "SUBMITTING...",
     "submitToBlockchain": "SUBMIT TO BLOCKCHAIN",
-    "playAgain": "PLAY AGAIN"
+    "playAgain": "PLAY AGAIN",
+    "yourProfile": "Your Profile",
+    "username": "Username",
+    "usernameLabel": "Username:",
+    "loadingUsername": "Loading username...",
+    "loading": "Loading...",
+    "refresh": "Refresh",
+    "connectWalletToViewProfile": "Connect wallet to view your profile",
+    "title": "TETRIS ON-CHAIN",
+    "play": "Play",
+    "leaderboard": "Leaderboard",
+    "howToPlayContent": "Use the arrow keys to move and rotate the tetriminos. Complete lines to score points. The game ends when the blocks stack up to the top.",
+    "score": "Score",
+    "submitScore": "Submit Score",
+    "connecting": "Connecting...",
+    "connected": "Connected",
+    "mute": "Mute",
+    "unmute": "Unmute"
 }

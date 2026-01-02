@@ -554,7 +554,8 @@ function App() {
                         </div>
 
                         <div className="blockchain-section">
-                            <WalletStatus
+                            <WalletStatus 
+                                t={t}
                                 account={blockchain.account}
                                 balance={blockchain.playerBalance}
                                 isLoadingBalance={blockchain.isLoadingBalance}
