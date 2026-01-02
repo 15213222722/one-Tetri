@@ -12,8 +12,8 @@ export class BlockchainService {
   private client: SuiClient;
 
   constructor() {
-    this.client = new SuiClient({ url: config.sui.rpcUrl });
-    logger.info('Blockchain service initialized', { rpcUrl: config.sui.rpcUrl });
+    this.client = new SuiClient({ url: config.one.rpcUrl });
+    logger.info('Blockchain service initialized', { rpcUrl: config.one.rpcUrl });
   }
 
   /**
@@ -57,9 +57,9 @@ export class BlockchainService {
       const tx = new Transaction();
       
       tx.moveCall({
-        target: `${config.sui.packageId}::battle_manager::create_battle`,
+        target: `${config.one.packageId}::battle_manager::create_battle`,
         arguments: [
-          tx.object(config.sui.battleManagerId),
+          tx.object(config.one.battleManagerId),
           tx.pure(player2Address),
           tx.pure(wager),
         ],
@@ -112,7 +112,7 @@ export class BlockchainService {
       const tx = new TransactionBlock();
       
       tx.moveCall({
-        target: `${config.sui.packageId}::battle_manager::end_battle`,
+        target: `${config.one.packageId}::battle_manager::end_battle`,
         arguments: [
           tx.object(battleObjectId),
           tx.pure(winnerAddress),
@@ -158,7 +158,7 @@ export class BlockchainService {
       const tx = new TransactionBlock();
       
       tx.moveCall({
-        target: `${config.sui.packageId}::battle_manager::forfeit_battle`,
+        target: `${config.one.packageId}::battle_manager::forfeit_battle`,
         arguments: [
           tx.object(battleObjectId),
         ],
@@ -194,7 +194,7 @@ export class BlockchainService {
 
       /* Production implementation:
       const result = await this.client.getObject({
-        id: config.sui.usernameRegistryId,
+        id: config.one.usernameRegistryId,
         options: {
           showContent: true,
         },
@@ -224,7 +224,7 @@ export class BlockchainService {
       /* Production implementation:
       await this.client.subscribeEvent({
         filter: {
-          MoveEventType: `${config.sui.packageId}::${eventType}`,
+          MoveEventType: `${config.one.packageId}::${eventType}`,
         },
         onMessage: (event) => {
           logger.debug('Received blockchain event', { event });

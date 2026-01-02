@@ -12,8 +12,8 @@ export const config = {
     password: process.env.REDIS_PASSWORD || undefined,
   },
   
-  sui: {
-    rpcUrl: process.env.SUI_RPC_URL || 'https://fullnode.testnet.sui.io:443',
+  one: {
+    rpcUrl: process.env.ONE_RPC_URL || 'https://rpc-testnet.onelabs.cc:443',
     packageId: process.env.PACKAGE_ID || '',
     battleManagerId: process.env.BATTLE_MANAGER_ID || '',
     usernameRegistryId: process.env.USERNAME_REGISTRY_ID || '',

@@ -7,20 +7,20 @@
 /// - Score validation and submission
 
 module tetris_game::game {
-    use sui::object::{Self, UID};
-    use sui::tx_context::{Self, TxContext};
-    use sui::transfer;
-    use sui::coin::{Self, Coin, TreasuryCap};
-    use sui::balance::{Balance, Supply};
-    use sui::clock::{Self, Clock};
-    use sui::random::{Self, Random};
-    use sui::event;
+    use one::object::{Self, UID};
+    use one::tx_context::{Self, TxContext};
+    use one::transfer;
+    use one::coin::{Self, Coin, TreasuryCap};
+    use one::balance::{Balance, Supply};
+    use one::clock::{Self, Clock};
+    use one::random::{Self, Random};
+    use one::event;
     use std::vector;
     use std::option;
-    use sui::table::{Self, Table};
+    use one::table::{Self, Table};
     use std::string::{Self, String};
-    use sui::display;
-    use sui::package;
+    use one::display;
+    use one::package;
 
     // ===== Error Constants =====
     
@@ -212,7 +212,7 @@ module tetris_game::game {
         let marketplace = Marketplace {
             id: object::new(ctx),
             fee_percentage: 250,  // 2.5%
-            collected_fees: sui::balance::zero<GAME>(),
+            collected_fees: one::balance::zero<GAME>(),
         };
         
         // Share the leaderboard, treasury, username registry, and marketplace as shared objects
@@ -231,7 +231,7 @@ module tetris_game::game {
     /// This is an entry function that creates a GameSeed and transfers it to the caller
     /// 
     /// Requirements: 5.1, 5.2
-    /// - Uses Sui randomness API for unpredictable seed generation
+    /// - Uses one randomness API for unpredictable seed generation
     /// - Stores seed on-chain with player address and timestamp
     /// - Returns seed to caller as an owned object
     public entry fun create_game_seed(
@@ -239,7 +239,7 @@ module tetris_game::game {
         clock: &Clock,
         ctx: &mut TxContext
     ) {
-        // Generate random bytes using Sui's randomness API
+        // Generate random bytes using one's randomness API
         let mut generator = random::new_generator(random, ctx);
         let mut seed_bytes = vector::empty<u8>();
         let mut i = 0;
@@ -348,7 +348,7 @@ module tetris_game::game {
         // Emit token mint event
         let token_amount = score / 100;
         if (token_amount > 0) {
-            sui::event::emit(TokenMintEvent {
+            one::event::emit(TokenMintEvent {
                 player: sender,
                 amount: token_amount,
                 score,
@@ -499,7 +499,7 @@ module tetris_game::game {
         // Only mint if there are tokens to mint (score >= 100)
         if (token_amount > 0) {
             // Mint tokens from the treasury supply using balance::increase_supply
-            let minted_balance = sui::balance::increase_supply(&mut treasury.supply, token_amount);
+            let minted_balance = one::balance::increase_supply(&mut treasury.supply, token_amount);
             
             // Create a Coin object with the minted balance
             let reward_coin = coin::from_balance(minted_balance, ctx);
@@ -511,7 +511,7 @@ module tetris_game::game {
     
     /// Get the total supply of tokens minted
     public fun get_total_supply(treasury: &TokenTreasury): u64 {
-        sui::balance::supply_value(&treasury.supply)
+        one::balance::supply_value(&treasury.supply)
     }
     
     // ===== Username Registry Functions =====
@@ -656,7 +656,7 @@ module tetris_game::game {
         battle.player2 = option::some(sender);
         
         // Lock player2's wager in escrow
-        sui::balance::join(&mut battle.escrow, coin::into_balance(wager));
+        one::balance::join(&mut battle.escrow, coin::into_balance(wager));
         
         // Set battle status to active
         battle.status = BATTLE_STATUS_ACTIVE;
@@ -687,8 +687,8 @@ module tetris_game::game {
         battle.winner = option::some(winner);
         
         // Transfer all escrowed funds to winner
-        let total_wager = sui::balance::value(&battle.escrow);
-        let winnings = sui::balance::split(&mut battle.escrow, total_wager);
+        let total_wager = one::balance::value(&battle.escrow);
+        let winnings = one::balance::split(&mut battle.escrow, total_wager);
         let winnings_coin = coin::from_balance(winnings, ctx);
         transfer::public_transfer(winnings_coin, winner);
         
@@ -728,8 +728,8 @@ module tetris_game::game {
         battle.winner = option::some(winner);
         
         // Transfer all escrowed funds to winner
-        let total_wager = sui::balance::value(&battle.escrow);
-        let winnings = sui::balance::split(&mut battle.escrow, total_wager);
+        let total_wager = one::balance::value(&battle.escrow);
+        let winnings = one::balance::split(&mut battle.escrow, total_wager);
         let winnings_coin = coin::from_balance(winnings, ctx);
         transfer::public_transfer(winnings_coin, winner);
         
@@ -759,7 +759,7 @@ module tetris_game::game {
     }
     
     public fun get_battle_escrow_value(battle: &Battle): u64 {
-        sui::balance::value(&battle.escrow)
+        one::balance::value(&battle.escrow)
     }
     
     // ===== BlockSkin NFT Functions =====
@@ -891,7 +891,7 @@ module tetris_game::game {
         let seller_coin = coin::split(&mut payment, seller_amount, ctx);
         
         // Collect marketplace fee
-        sui::balance::join(&mut marketplace.collected_fees, coin::into_balance(fee_coin));
+        one::balance::join(&mut marketplace.collected_fees, coin::into_balance(fee_coin));
         
         // Transfer payment to seller
         transfer::public_transfer(seller_coin, listing.seller);
@@ -952,7 +952,7 @@ module tetris_game::game {
     }
     
     public fun get_marketplace_collected_fees(marketplace: &Marketplace): u64 {
-        sui::balance::value(&marketplace.collected_fees)
+        one::balance::value(&marketplace.collected_fees)
     }
     
     // ===== Test-only Functions =====
