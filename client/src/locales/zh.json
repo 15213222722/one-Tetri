@@ -73,5 +73,22 @@
     "hoursAgo": "{{count}}小时前",
     "daysAgo": "{{count}}天前",
     "loadingLeaderboard": "正在加载排行榜...",
-    "noScoresYet": "还没有分数，成为第一人！"
+    "noScoresYet": "还没有分数，成为第一人！",
+    "checkingUsername": "正在检查用户名注册...",
+    "authSuccess": "认证成功！",
+    "usernameRegisteredSuccess": "用户名注册成功！认证成功！",
+    "connectWalletFirst": "请先连接您的钱包！",
+    "creatingGameSeedOnBlockchain": "正在区块链上创建游戏种子...",
+    "gameSeedCreated": "游戏种子已创建！您的游戏是可证明公平的。",
+    "failedToCreateGameSeed": "创建游戏种子失败。请再试一次。",
+    "noBlockchainGameSeed": "未找到区块链游戏种子。请连接钱包并开始新游戏。",
+    "submittingScoreToBlockchain": "正在向区块链提交分数...",
+    "scoreSubmitted": "分数已提交！您获得了 {{tokens}} 个TETRI代币！",
+    "updatingLeaderboardAndBalance": "正在更新排行榜和余额...",
+    "failedToSubmitScore": "向区块链提交分数失败。",
+    "skinSelected": "皮肤已选择！",
+    "skinClaimed": "{{skinName}} 已作为NFT领取！请检查您的钱包。",
+    "failedToClaimSkin": "领取皮肤NFT失败。",
+    "multiplayerComingSoon": "多人游戏即将推出！敬请期待史诗般的战斗。",
+    "failedToRegisterUsername": "注册用户名失败"
 }

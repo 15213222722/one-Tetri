@@ -73,5 +73,22 @@
     "hoursAgo": "{{count}}h ago",
     "daysAgo": "{{count}}d ago",
     "loadingLeaderboard": "Loading leaderboard...",
-    "noScoresYet": "No scores yet. Be the first!"
+    "noScoresYet": "No scores yet. Be the first!",
+    "checkingUsername": "Checking username registration...",
+    "authSuccess": "Authentication successful!",
+    "usernameRegisteredSuccess": "Username registered! Authentication successful!",
+    "connectWalletFirst": "Please connect your wallet first!",
+    "creatingGameSeedOnBlockchain": "Creating game seed on blockchain...",
+    "gameSeedCreated": "Game seed created! Your game is provably fair.",
+    "failedToCreateGameSeed": "Failed to create game seed. Please try again.",
+    "noBlockchainGameSeed": "No blockchain game seed. Connect wallet and start a new game.",
+    "submittingScoreToBlockchain": "Submitting score to blockchain...",
+    "scoreSubmitted": "Score submitted! You earned {{tokens}} TETRI tokens!",
+    "updatingLeaderboardAndBalance": "Updating leaderboard and balance...",
+    "failedToSubmitScore": "Failed to submit score to blockchain.",
+    "skinSelected": "Skin selected!",
+    "skinClaimed": "{{skinName}} claimed as NFT! Check your wallet.",
+    "failedToClaimSkin": "Failed to claim skin NFT.",
+    "multiplayerComingSoon": "Multiplayer coming soon! Stay tuned for epic battles.",
+    "failedToRegisterUsername": "Failed to register username"
 }

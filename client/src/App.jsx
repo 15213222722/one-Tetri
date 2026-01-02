@@ -116,10 +116,10 @@ function App() {
             if (authState === AUTH_STATES.DISCONNECTED) {
                 // Just connected, start verification
                 setAuthState(AUTH_STATES.VERIFYING);
-                setAuthMessage('Checking username registration...');
+                setAuthMessage(t('checkingUsername'));
             }
         }
-    }, [blockchain.account, authState]);
+    }, [blockchain.account, authState, t]);
 
     // Handle username verification completion
     useEffect(() => {
@@ -139,15 +139,15 @@ function App() {
     // Handle authentication completion
     useEffect(() => {
         if (authState === AUTH_STATES.AUTHENTICATED && currentScreen === 'landing') {
-            showToast('success', 'Authentication successful!');
+            showToast('success', t('authSuccess'));
             setCurrentScreen('menu');
         }
-    }, [authState, currentScreen]);
+    }, [authState, currentScreen, t]);
 
     // Handle successful username registration
     const handleUsernameRegistered = () => {
         setAuthState(AUTH_STATES.AUTHENTICATED);
-        showToast('success', 'Username registered! Authentication successful!');
+        showToast('success', t('usernameRegisteredSuccess'));
     };
 
     // Show toast notification
@@ -159,22 +159,22 @@ function App() {
     const handleStartGame = async () => {
         // Must have wallet connected
         if (!blockchain.account) {
-            showToast('error', 'Please connect your wallet first!');
+            showToast('error', t('connectWalletFirst'));
             return;
         }
 
         try {
-            setLoadingMessage('Creating game seed on blockchain...');
+            setLoadingMessage(t('creatingGameSeedOnBlockchain'));
             const result = await blockchain.createGameSeed();
             setGameSeedObjectId(result.gameSeedObjectId);
             setGameSeed(result.seed);
-            showToast('success', 'Game seed created! Your game is provably fair.');
+            showToast('success', t('gameSeedCreated'));
 
             game.startGame();
             setGameMode('playing');
         } catch (error) {
             console.error('Failed to start game:', error);
-            showToast('error', error.message || 'Failed to create game seed. Please try again.');
+            showToast('error', error.message || t('failedToCreateGameSeed'));
         }
     };
 
@@ -188,17 +188,17 @@ function App() {
     // Handle submit score
     const handleSubmitScore = async () => {
         if (!gameSeedObjectId || !blockchain.account) {
-            showToast('error', 'No blockchain game seed. Connect wallet and start a new game.');
+            showToast('error', t('noBlockchainGameSeed'));
             return;
         }
 
         try {
-            setLoadingMessage('Submitting score to blockchain...');
+            setLoadingMessage(t('submittingScoreToBlockchain'));
             const result = await blockchain.submitScore(gameSeedObjectId, game.gameState.score);
-            showToast('success', `Score submitted! You earned ${result.tokensEarned} TETRI tokens!`);
+            showToast('success', t('scoreSubmitted', { tokens: result.tokensEarned }));
 
             // Wait a bit for blockchain to process, then refresh data
-            setLoadingMessage('Updating leaderboard and balance...');
+            setLoadingMessage(t('updatingLeaderboardAndBalance'));
             await new Promise(resolve => setTimeout(resolve, 2000)); // 2 second delay
 
             await blockchain.fetchLeaderboard();
@@ -207,7 +207,7 @@ function App() {
             setLoadingMessage('');
         } catch (error) {
             console.error('Failed to submit score:', error);
-            showToast('error', error.message || 'Failed to submit score to blockchain.');
+            showToast('error', error.message || t('failedToSubmitScore'));
             setLoadingMessage('');
         }
     };
@@ -223,24 +223,24 @@ function App() {
     const handleSelectSkin = (skinId) => {
         setSelectedSkin(skinId);
         localStorage.setItem('selectedSkin', skinId.toString());
-        showToast('success', 'Skin selected!');
+        showToast('success', t('skinSelected'));
     };
 
     // Handle claim skin as NFT
     const handleClaimSkin = async (skin) => {
         if (!blockchain.account) {
-            showToast('error', 'Please connect your wallet first!');
+            showToast('error', t('connectWalletFirst'));
             return;
         }
 
         setIsClaimingSkin(true);
         try {
             const result = await blockchain.claimSkinNFT(skin.id, skin.name, skin.colors);
-            showToast('success', `${skin.name} claimed as NFT! Check your wallet.`);
+            showToast('success', t('skinClaimed', { skinName: skin.name }));
             return result;
         } catch (error) {
             console.error('Failed to claim skin:', error);
-            showToast('error', error.message || 'Failed to claim skin NFT.');
+            showToast('error', error.message || t('failedToClaimSkin'));
             throw error;
         } finally {
             setIsClaimingSkin(false);
@@ -387,7 +387,7 @@ function App() {
                             onMouseEnter={() => sound.playHoverSound()}
                             onClick={() => {
                                 sound.playClickSound();
-                                showToast('info', 'Multiplayer coming soon! Stay tuned for epic battles.');
+                                showToast('info', t('multiplayerComingSoon'));
                             }}
                         >
                             <div className="menu-button-icon">MP</div>
@@ -595,7 +595,7 @@ function App() {
                             setCurrentScreen('menu');
                         }}
                     >
-                        ← BACK TO MENU
+                        {t('backToMenu')}
                     </button>
 
                     {/* Show Battle View if in battle */}
@@ -651,7 +651,7 @@ function App() {
                                 await blockchain.registerUsername(username);
                                 handleUsernameRegistered();
                             } catch (error) {
-                                showToast('error', error.message || 'Failed to register username');
+                                showToast('error', error.message || t('failedToRegisterUsername'));
                                 throw error;
                             }
                         }}
