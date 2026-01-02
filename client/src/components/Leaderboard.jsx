@@ -1,6 +1,6 @@
 import './Leaderboard.css';
 
-const Leaderboard = ({ scores, currentPlayerAddress, isLoading, onRefresh, usernameMap = {} }) => {
+const Leaderboard = ({ scores, currentPlayerAddress, isLoading, onRefresh, usernameMap = {}, t }) => {
     const formatAddress = (address) => {
         if (!address || address.length < 10) return address;
         return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -20,7 +20,7 @@ const Leaderboard = ({ scores, currentPlayerAddress, isLoading, onRefresh, usern
     };
 
     const formatTimestamp = (timestamp) => {
-        if (!timestamp) return 'Unknown';
+        if (!timestamp) return t('unknownTime');
         
         const date = new Date(timestamp);
         const now = new Date();
@@ -29,22 +29,22 @@ const Leaderboard = ({ scores, currentPlayerAddress, isLoading, onRefresh, usern
         const diffHours = Math.floor(diffMs / 3600000);
         const diffDays = Math.floor(diffMs / 86400000);
         
-        if (diffMins < 1) return 'Just now';
-        if (diffMins < 60) return `${diffMins}m ago`;
-        if (diffHours < 24) return `${diffHours}h ago`;
-        if (diffDays < 7) return `${diffDays}d ago`;
+        if (diffMins < 1) return t('justNow');
+        if (diffMins < 60) return t('minutesAgo', { count: diffMins });
+        if (diffHours < 24) return t('hoursAgo', { count: diffHours });
+        if (diffDays < 7) return t('daysAgo', { count: diffDays });
         return date.toLocaleDateString();
     };
 
     return (
         <div className="leaderboard">
-            <h3>Leaderboard</h3>
+            <h3>{t('leaderboard')}</h3>
             <button onClick={onRefresh} className="btn btn-secondary" disabled={isLoading}>
-                {isLoading ? 'Loading...' : 'Refresh'}
+                {isLoading ? t('loading') : t('refresh')}
             </button>
             <div className="leaderboard-list">
                 {isLoading ? (
-                    <p className="empty-state">Loading leaderboard...</p>
+                    <p className="empty-state">{t('loadingLeaderboard')}</p>
                 ) : scores.length > 0 ? (
                     scores.map((entry, index) => (
                         <div 
@@ -58,7 +58,7 @@ const Leaderboard = ({ scores, currentPlayerAddress, isLoading, onRefresh, usern
                         </div>
                     ))
                 ) : (
-                    <p className="empty-state">No scores yet. Be the first!</p>
+                    <p className="empty-state">{t('noScoresYet')}</p>
                 )}
             </div>
         </div>

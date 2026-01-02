@@ -66,5 +66,12 @@
     "connecting": "连接中...",
     "connected": "已连接",
     "mute": "静音",
-    "unmute": "取消静音"
+    "unmute": "取消静音",
+    "unknownTime": "未知",
+    "justNow": "刚刚",
+    "minutesAgo": "{{count}}分钟前",
+    "hoursAgo": "{{count}}小时前",
+    "daysAgo": "{{count}}天前",
+    "loadingLeaderboard": "正在加载排行榜...",
+    "noScoresYet": "还没有分数，成为第一人！"
 }

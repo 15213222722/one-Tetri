@@ -59,7 +59,16 @@ function App() {
             en,
             zh
         };
-        return (key) => texts[language][key] || key;
+        return (key, options) => {
+            let text = texts[language][key] || key;
+            if (options && typeof options === 'object') {
+                Object.keys(options).forEach(optionKey => {
+                    const regex = new RegExp(`{{${optionKey}}}`, 'g');
+                    text = text.replace(regex, options[optionKey]);
+                });
+            }
+            return text;
+        };
     }, [language]);
 
     const game = useGame(gameSeed);
@@ -569,6 +578,7 @@ function App() {
                                 usernameMap={blockchain.account && blockchain.username ? {
                                     [blockchain.account.address]: blockchain.username
                                 } : {}}
+                                t={t}
                             />
                         </div>
                     </div>

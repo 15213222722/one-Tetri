@@ -66,5 +66,12 @@
     "connecting": "Connecting...",
     "connected": "Connected",
     "mute": "Mute",
-    "unmute": "Unmute"
+    "unmute": "Unmute",
+    "unknownTime": "Unknown",
+    "justNow": "Just now",
+    "minutesAgo": "{{count}}m ago",
+    "hoursAgo": "{{count}}h ago",
+    "daysAgo": "{{count}}d ago",
+    "loadingLeaderboard": "Loading leaderboard...",
+    "noScoresYet": "No scores yet. Be the first!"
 }
