@@ -8,7 +8,7 @@ import './MarketplaceView.css';
 /**
  * Marketplace for trading skin NFTs
  */
-export default function MarketplaceView({ onBack }) {
+export default function MarketplaceView({ onBack, t }) {
     const [listings, setListings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -29,12 +29,6 @@ export default function MarketplaceView({ onBack }) {
             setLoading(true);
             setError(null);
 
-            // Query all Listing objects
-            // Listings are shared objects, so we need to query them differently
-            // For now, we'll query objects owned by all addresses (this is a workaround)
-            // In production, you'd want to index listings or use a subgraph
-            
-            // Try querying recent transactions to find created Listing objects
             const txs = await suiClient.queryTransactionBlocks({
                 filter: {
                     MoveFunction: {
@@ -52,7 +46,6 @@ export default function MarketplaceView({ onBack }) {
 
             console.log('List skin transactions:', txs);
 
-            // Extract created Listing objects from transactions
             const listingIds = [];
             txs.data.forEach(tx => {
                 const created = tx.objectChanges?.filter(
@@ -64,7 +57,6 @@ export default function MarketplaceView({ onBack }) {
 
             console.log('Found listing IDs:', listingIds);
 
-            // Fetch each listing object
             const listingObjects = await Promise.all(
                 listingIds.map(id => suiClient.getObject({
                     id,
@@ -74,9 +66,8 @@ export default function MarketplaceView({ onBack }) {
 
             console.log('Listing objects:', listingObjects);
 
-            // Parse listings
             const parsedListings = listingObjects
-                .filter(obj => obj.data) // Filter out any failed fetches
+                .filter(obj => obj.data)
                 .map(obj => {
                     const fields = obj.data?.content?.fields;
                     const skinFields = fields?.skin?.fields;
@@ -96,7 +87,7 @@ export default function MarketplaceView({ onBack }) {
             setListings(parsedListings);
         } catch (err) {
             console.error('Failed to load marketplace listings:', err);
-            setError('Failed to load marketplace listings');
+            setError(t('failedToLoadMarketplace'));
         } finally {
             setLoading(false);
         }
@@ -105,11 +96,10 @@ export default function MarketplaceView({ onBack }) {
     const handleBuyNFT = async (listing) => {
         try {
             await skinNFT.buySkinNFT(listing.id, listing.price);
-            // Auto-refresh listings after purchase
             await loadMarketplaceListings();
         } catch (error) {
             console.error('Failed to buy NFT:', error);
-            setError(error.message || 'Failed to buy NFT');
+            setError(error.message || t('failedToBuyNFT'));
         }
     };
 
@@ -117,15 +107,13 @@ export default function MarketplaceView({ onBack }) {
         if (!selectedNFT || !listPrice) return;
 
         try {
-            // Query user's owned NFTs to get the actual object ID
             const ownedNFTs = await skinNFT.getOwnedNFTs();
             console.log('Owned NFTs:', ownedNFTs);
             
-            // Find the NFT that matches the selected skin name
             const nftToList = ownedNFTs.find(nft => nft.skinName === selectedNFT.name);
             
             if (!nftToList) {
-                setError(`Could not find NFT for ${selectedNFT.name} in your wallet. Make sure you claimed it as an NFT.`);
+                setError(t('couldNotFindNFT', { skinName: selectedNFT.name }));
                 return;
             }
             
@@ -137,16 +125,14 @@ export default function MarketplaceView({ onBack }) {
             setListPrice('');
             setError(null);
             
-            // Refresh listings
             await loadMarketplaceListings();
         } catch (error) {
             console.error('Failed to list NFT:', error);
-            setError(error.message || 'Failed to list NFT');
+            setError(error.message || t('failedToListNFT'));
         }
     };
 
     const formatPrice = (priceInTetri) => {
-        // TETRI tokens have 0 decimals, so no conversion needed
         return priceInTetri.toLocaleString();
     };
 
@@ -155,18 +141,17 @@ export default function MarketplaceView({ onBack }) {
             <div className="marketplace-view">
                 <div className="marketplace-header">
                     <button className="back-button" onClick={onBack}>
-                        ← BACK
+                        {t('backToMenu')}
                     </button>
-                    <h1>MARKETPLACE</h1>
+                    <h1>{t('marketplace')}</h1>
                 </div>
-                <div className="loading-message">Loading marketplace...</div>
+                <div className="loading-message">{t('loadingMarketplace')}</div>
             </div>
         );
     }
 
     return (
         <div className="marketplace-view">
-            {/* Animated Background for Marketplace */}
             <div className="grid-overlay marketplace-grid">
                 <div className="grid-lines-horizontal"></div>
                 <div className="grid-lines-vertical"></div>
@@ -183,17 +168,16 @@ export default function MarketplaceView({ onBack }) {
             
             <div className="marketplace-header">
                 <button className="back-button" onClick={onBack}>
-                    ← BACK
+                    {t('backToMenu')}
                 </button>
-                <h1>MARKETPLACE</h1>
+                <h1>{t('marketplace')}</h1>
             </div>
 
-            {/* Floating List NFT Button */}
             <button 
                 className="list-nft-button floating-button"
                 onClick={() => setShowListModal(true)}
             >
-                + LIST NFT
+                + {t('listNFT')}
             </button>
 
             <div className="marketplace-content">
@@ -205,8 +189,8 @@ export default function MarketplaceView({ onBack }) {
 
                 {listings.length === 0 ? (
                     <div className="no-listings">
-                        <h2>No items for sale</h2>
-                        <p>Be the first to list a skin NFT!</p>
+                        <h2>{t('noItemsForSale')}</h2>
+                        <p>{t('beFirstToList')}</p>
                     </div>
                 ) : (
                     <div className="listings-grid">
@@ -227,7 +211,7 @@ export default function MarketplaceView({ onBack }) {
 
                                     <div className="listing-info">
                                         <h3 className="skin-name">{listing.skinName}</h3>
-                                        <p className="skin-description">Rarity: {listing.skinRarity}</p>
+                                        <p className="skin-description">{t('rarity', { rarity: listing.skinRarity })}</p>
                                         
                                         <div className="listing-details">
                                             <div className="price">
@@ -243,7 +227,7 @@ export default function MarketplaceView({ onBack }) {
                                             onClick={() => handleBuyNFT(listing)}
                                             disabled={skinNFT.isLoading}
                                         >
-                                            {skinNFT.isLoading ? 'BUYING...' : 'BUY NOW'}
+                                            {skinNFT.isLoading ? t('buying') : t('buyNow')}
                                         </button>
                                     </div>
                                 </div>
@@ -253,18 +237,17 @@ export default function MarketplaceView({ onBack }) {
                 )}
             </div>
 
-            {/* List NFT Modal */}
             {showListModal && (
                 <div className="modal-overlay" onClick={() => setShowListModal(false)}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <h2>List NFT for Sale</h2>
+                        <h2>{t('listNFTForSale')}</h2>
                         
                         {!selectedNFT ? (
                             <>
-                                <p>Select which NFT you want to sell:</p>
+                                <p>{t('selectNFTToSell')}</p>
                                 <div className="nft-selection-grid">
                                     {skinNFT.getClaimedSkins().length === 0 ? (
-                                        <p className="no-nfts">You don't have any claimed NFTs yet. Claim skins in the Customization menu first!</p>
+                                        <p className="no-nfts">{t('noClaimedNFTs')}</p>
                                     ) : (
                                         skinNFT.getClaimedSkins().map(skinId => {
                                             const skin = getSkinById(skinId);
@@ -293,19 +276,19 @@ export default function MarketplaceView({ onBack }) {
                                     className="cancel-button"
                                     onClick={() => setShowListModal(false)}
                                 >
-                                    CANCEL
+                                    {t('cancel')}
                                 </button>
                             </>
                         ) : (
                             <>
-                                <p>Listing: <strong>{selectedNFT.name}</strong></p>
-                                <p>Enter the price in TETRI tokens:</p>
+                                <p>{t('listingNFTLabel')} <strong>{selectedNFT.name}</strong></p>
+                                <p>{t('enterPriceInTetri')}</p>
                                 
                                 <input
                                     type="number"
                                     step="1"
                                     min="1"
-                                    placeholder="Price in TETRI (e.g., 1000)"
+                                    placeholder={t('priceInTetriPlaceholder')}
                                     value={listPrice}
                                     onChange={(e) => setListPrice(e.target.value)}
                                     className="price-input"
@@ -319,14 +302,14 @@ export default function MarketplaceView({ onBack }) {
                                             setListPrice('');
                                         }}
                                     >
-                                        BACK
+                                        {t('back')}
                                     </button>
                                     <button 
                                         className="confirm-button"
                                         onClick={handleListNFT}
                                         disabled={!listPrice || skinNFT.isLoading}
                                     >
-                                        {skinNFT.isLoading ? 'LISTING...' : 'LIST NFT'}
+                                        {skinNFT.isLoading ? t('listing') : t('listNFT')}
                                     </button>
                                 </div>
                             </>

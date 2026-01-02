@@ -637,6 +637,7 @@ function App() {
             {currentScreen === 'marketplace' && (
                 <MarketplaceView
                     onBack={() => setCurrentScreen('menu')}
+                    t={t}
                 />
             )}
 
