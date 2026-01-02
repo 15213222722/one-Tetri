@@ -191,7 +191,8 @@ function App() {
             showToast('error', t('noBlockchainGameSeed'));
             return;
         }
-
+        console.log('Game seed:', gameSeedObjectId);
+        console.log('Score:', game.gameState.score);
         try {
             setLoadingMessage(t('submittingScoreToBlockchain'));
             const result = await blockchain.submitScore(gameSeedObjectId, game.gameState.score);

@@ -17,15 +17,15 @@ export const WEBSOCKET_CONFIG = {
 // Deployed Contract Addresses (OneChain Testnet)
 export const CONTRACT_CONFIG = {
     // Package ID - the deployed smart contract package
-    packageId: '0x8b5ce060fabd9c448c54ae4b98353616b134bc6d6b4ee01bf5c7a54eac56ea51',
+    packageId: '0x836714bf944d109f86498d4cb97cb9fdad70c7143398d7c5c6e1baf504f04ab9',
     
     // Shared Objects - required for transactions
-    leaderboardId: '0x61fa2e0b767048a95aece77d7f5f8983eeaefb14cfaf1c3dc894c48d6702eca1',
-    treasuryId: '0xd0175f31d000cd4256b2c8c266380dab6b757f5c3328d2faa004320536e1aec6',
-    usernameRegistryId: '0xcd3ad59b9810963d90c66142a633c7b7c4034ca00d1d6385afa1414bdfb9998c',
-    marketplaceId: '0xc7d68b5e8dfaa12bc7db8215b1ac561ae0ad310a2f96a0b6e2b4ae44bae695db',
+    leaderboardId: '0x001a784efef4b920f3781224cef1ae58bd093f6537472cd65160aaf436c1bb4e',
+    treasuryId: '0x49cebc2210c12ac24252b148b96da54add6fa8369272097b36d6d726ae7e28ec',
+    usernameRegistryId: '0x290aede1d5904e2cae838d2d7e295cc0f9340d01657eeabef99a55738ed17e20',
+    marketplaceId: '0xf17679c11a6939627cd0eee7ccd7bddede2024dc5fe8487c4cbb36acf0414670',
     
-    // System Objects - Sui built-in objects
+    // System Objects - Sui built-in objects 
     randomId: '0x8',  // Sui Random object
     clockId: '0x6',   // Sui Clock object
     
@@ -34,7 +34,7 @@ export const CONTRACT_CONFIG = {
     
     // Token Information
     token: {
-        type: '0x8b5ce060fabd9c448c54ae4b98353616b134bc6d6b4ee01bf5c7a54eac56ea51::game::GAME',
+        type: '0x836714bf944d109f86498d4cb97cb9fdad70c7143398d7c5c6e1baf504f04ab9::game::GAME',
         symbol: 'TETRI',
         name: 'TetriChain Token',
         decimals: 0,  // Token has no decimals - raw balance is display balance

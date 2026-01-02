@@ -204,7 +204,11 @@ export const useBlockchain = () => {
 
             const tx = new Transaction();
             tx.setSender(account.address);
-            
+            console.log('Submitting score:', score, 'for game seed:', gameSeedObjectId);
+            console.log('packageId:', CONTRACT_CONFIG.packageId);
+            console.log('moduleName:', CONTRACT_CONFIG.moduleName);
+            console.log('leaderboardId:', CONTRACT_CONFIG.leaderboardId);
+            console.log('treasuryId:', CONTRACT_CONFIG.treasuryId);
             tx.moveCall({
                 target: `${CONTRACT_CONFIG.packageId}::${CONTRACT_CONFIG.moduleName}::submit_score`,
                 arguments: [
