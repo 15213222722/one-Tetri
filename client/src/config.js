@@ -6,35 +6,35 @@
  */
 
 // OneChain Testnet Configuration (Sui-compatible)
-export const NETWORK = 'onechain-testnet';
-export const RPC_URL = 'https://rpc-testnet.onelabs.cc:443';
+export const NETWORK = import.meta.env.NETWORK;
+export const RPC_URL = import.meta.env.VITE_RPC_URL;
 
 // WebSocket Server Configuration
 export const WEBSOCKET_CONFIG = {
-    serverUrl: import.meta.env.VITE_SOCKET_SERVER_URL || 'http://localhost:3001',
+    serverUrl: import.meta.env.VITE_SOCKET_SERVER_URL,
 };
 
 // Deployed Contract Addresses (OneChain Testnet)
 export const CONTRACT_CONFIG = {
     // Package ID - the deployed smart contract package
-    packageId: '0x836714bf944d109f86498d4cb97cb9fdad70c7143398d7c5c6e1baf504f04ab9',
+    packageId: import.meta.env.VITE_PACKAGE_ID || '',
     
     // Shared Objects - required for transactions
-    leaderboardId: '0x001a784efef4b920f3781224cef1ae58bd093f6537472cd65160aaf436c1bb4e',
-    treasuryId: '0x49cebc2210c12ac24252b148b96da54add6fa8369272097b36d6d726ae7e28ec',
-    usernameRegistryId: '0x290aede1d5904e2cae838d2d7e295cc0f9340d01657eeabef99a55738ed17e20',
-    marketplaceId: '0xf17679c11a6939627cd0eee7ccd7bddede2024dc5fe8487c4cbb36acf0414670',
-    
-    // System Objects - Sui built-in objects 
-    randomId: '0x8',  // Sui Random object
-    clockId: '0x6',   // Sui Clock object
-    
+    leaderboardId: import.meta.env.VITE_LEADERBOARD_ID || '',
+    treasuryId: import.meta.env.VITE_TREASURY_ID || '',
+    usernameRegistryId: import.meta.env.VITE_USERNAME_REGISTRY_ID || '',
+    marketplaceId: import.meta.env.VITE_MARKETPLACE_ID || '',
+
+    // System Objects - Sui built-in objects
+    randomId: import.meta.env.VITE_RANDOM_ID || '0x8',  // Sui Random object
+    clockId: import.meta.env.VITE_CLOCK_ID || '0x6',   // Sui Clock object
+
     // Module name
     moduleName: 'game',
     
     // Token Information
     token: {
-        type: '0x836714bf944d109f86498d4cb97cb9fdad70c7143398d7c5c6e1baf504f04ab9::game::GAME',
+        type: `${import.meta.env.VITE_PACKAGE_ID}::game::GAME`,
         symbol: 'TETRI',
         name: 'TetriChain Token',
         decimals: 0,  // Token has no decimals - raw balance is display balance
