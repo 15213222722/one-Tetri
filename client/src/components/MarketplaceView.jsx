@@ -210,7 +210,7 @@ export default function MarketplaceView({ onBack, t }) {
                                     </div>
 
                                     <div className="listing-info">
-                                        <h3 className="skin-name">{listing.skinName}</h3>
+                                        <h3 className="skin-name">{t(listing.skinName)}</h3>
                                         <p className="skin-description">{t('rarity', { rarity: listing.skinRarity })}</p>
                                         
                                         <div className="listing-details">
@@ -266,7 +266,7 @@ export default function MarketplaceView({ onBack, t }) {
                                                             />
                                                         ))}
                                                     </div>
-                                                    <h4>{skin.name}</h4>
+                                                    <h4>{t(skin.name)}</h4>
                                                 </div>
                                             );
                                         })
@@ -281,7 +281,7 @@ export default function MarketplaceView({ onBack, t }) {
                             </>
                         ) : (
                             <>
-                                <p>{t('listingNFTLabel')} <strong>{selectedNFT.name}</strong></p>
+                                <p>{t('listingNFTLabel')} <strong>{t(selectedNFT.name)}</strong></p>
                                 <p>{t('enterPriceInTetri')}</p>
                                 
                                 <input
