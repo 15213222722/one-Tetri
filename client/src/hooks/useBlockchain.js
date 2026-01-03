@@ -411,7 +411,6 @@ export const useBlockchain = () => {
                 const username = new TextDecoder().decode(
                     Uint8Array.from(bytes),
                 );
-                console.log('✅ Username loaded from blockchain:', username);
                 setUsername(username || null);
             } else {
                 setUsername(null);
