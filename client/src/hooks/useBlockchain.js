@@ -12,14 +12,14 @@ export const useBlockchain = () => {
     const account = useCurrentAccount();
     const { mutate: signAndExecuteTransaction } = useSignAndExecuteTransaction();
     const client = useSuiClient();
-    
+
     const [isCreatingGameSeed, setIsCreatingGameSeed] = useState(false);
     const [isSubmittingScore, setIsSubmittingScore] = useState(false);
     const [leaderboard, setLeaderboard] = useState([]);
     const [playerBalance, setPlayerBalance] = useState(0);
     const [isLoadingLeaderboard, setIsLoadingLeaderboard] = useState(false);
     const [isLoadingBalance, setIsLoadingBalance] = useState(false);
-    
+
     // Username state
     const [username, setUsername] = useState(null);
     const [isLoadingUsername, setIsLoadingUsername] = useState(true);
@@ -37,7 +37,7 @@ export const useBlockchain = () => {
             setIsLoadingUsername(true);
             const storageKey = `tetrichain_username_${account.address}`;
             const storedUsername = localStorage.getItem(storageKey);
-            
+
             console.log('🔍 Loading username for address:', account.address);
             console.log('📦 Storage key:', storageKey);
             console.log('👤 Stored username:', storedUsername || 'NOT FOUND');
@@ -49,31 +49,32 @@ export const useBlockchain = () => {
                 setIsLoadingUsername(false);
                 return;
             }
+            const tx = new Transaction();
+            tx.moveCall({
+                target: `${CONTRACT_CONFIG.packageId}::game::get_username`,
+                arguments: [
+                    tx.object(CONTRACT_CONFIG.usernameRegistryId),
+                    tx.pure.address(account.address),
+                ],
+            });
 
-            // Not in localStorage, query blockchain
-            console.log('🔗 Querying blockchain for username...');
-            try {
-                const registryObject = await client.getObject({
-                    id: CONTRACT_CONFIG.usernameRegistryId,
-                    options: { showContent: true },
-                });
-
-                const fields = registryObject.data?.content?.fields;
-                console.log('📋 Registry fields:', fields);
-
-                // Try to get username from the registry
-                // Note: This is a simplified check - actual implementation depends on contract structure
-                // For now, we'll just check localStorage and assume no on-chain username
-                console.log('⚠️ On-chain username lookup not fully implemented yet');
+            const result = await client.devInspectTransactionBlock({
+                transactionBlock: tx,
+                sender: account.address,
+            });
+            const returnValues = result.results?.[0]?.returnValues;
+            if (returnValues?.length) {
+                const [bytes] = returnValues[0];
+                const username = new TextDecoder().decode(
+                    Uint8Array.from(bytes),
+                );
+                console.log('✅ Username loaded from blockchain:', username);
+                setUsername(username || null);
+            } else {
                 setUsername(null);
-                setIsLoadingUsername(false);
-            } catch (error) {
-                console.error('❌ Error querying blockchain:', error);
-                setUsername(null);
-                setIsLoadingUsername(false);
             }
+            setIsLoadingUsername(false);
         };
-
         loadUsername();
     }, [account, client]);
 
@@ -106,7 +107,7 @@ export const useBlockchain = () => {
             tx.setGasBudget(TX_CONFIG.createSeedGasBudget);
 
             signAndExecuteTransaction(
-                { 
+                {
                     transaction: tx,
                 },
                 {
@@ -114,10 +115,10 @@ export const useBlockchain = () => {
                         try {
                             console.log('Transaction result:', result);
                             console.log('Transaction digest:', result.digest);
-                            
+
                             // Wait a moment for the transaction to be indexed
                             await new Promise(resolve => setTimeout(resolve, 1000));
-                            
+
                             // Get the transaction details with object changes
                             const txDetails = await client.getTransactionBlock({
                                 digest: result.digest,
@@ -126,9 +127,9 @@ export const useBlockchain = () => {
                                     showObjectChanges: true,
                                 }
                             });
-                            
+
                             console.log('Transaction details:', txDetails);
-                            
+
                             // Extract the created GameSeed object
                             const createdObjects = txDetails.objectChanges?.filter(
                                 change => change.type === 'created' && change.objectType.includes('::game::GameSeed')
@@ -151,7 +152,7 @@ export const useBlockchain = () => {
                             console.log('GameSeed object:', gameSeedObject);
 
                             const seedBytes = gameSeedObject.data?.content?.fields?.seed;
-                            
+
                             if (!seedBytes || !Array.isArray(seedBytes)) {
                                 console.error('Invalid seed data:', seedBytes);
                                 throw new Error('Invalid seed data in GameSeed object');
@@ -161,11 +162,11 @@ export const useBlockchain = () => {
                             console.log('Seed extracted:', seed);
 
                             setIsCreatingGameSeed(false);
-                            resolve({ 
-                                success: true, 
-                                seed, 
-                                gameSeedObjectId, 
-                                txDigest: result.digest 
+                            resolve({
+                                success: true,
+                                seed,
+                                gameSeedObjectId,
+                                txDigest: result.digest
                             });
                         } catch (error) {
                             console.error('Error processing transaction result:', error);
@@ -226,7 +227,7 @@ export const useBlockchain = () => {
             tx.setGasBudget(TX_CONFIG.submitScoreGasBudget);
 
             signAndExecuteTransaction(
-                { 
+                {
                     transaction: tx,
                     options: {
                         showEffects: true,
@@ -239,10 +240,10 @@ export const useBlockchain = () => {
                         console.log('Score submission result:', result);
                         const tokensEarned = Math.floor(score / 100);
                         setIsSubmittingScore(false);
-                        resolve({ 
-                            success: true, 
-                            tokensEarned, 
-                            txDigest: result.digest 
+                        resolve({
+                            success: true,
+                            tokensEarned,
+                            txDigest: result.digest
                         });
                     },
                     onError: (error) => {
@@ -293,11 +294,11 @@ export const useBlockchain = () => {
                     // Try to get username from localStorage first
                     const storageKey = `tetrichain_username_${score.player}`;
                     const localUsername = localStorage.getItem(storageKey);
-                    
+
                     if (localUsername) {
                         return { ...score, username: localUsername };
                     }
-                    
+
                     // If not in localStorage, username not available (blockchain query is complex)
                     return score;
                 } catch (error) {
@@ -332,7 +333,7 @@ export const useBlockchain = () => {
             const coinType = CONTRACT_CONFIG.token.type;
             console.log('Fetching balance for address:', account.address);
             console.log('Coin type:', coinType);
-            
+
             const coins = await client.getCoins({
                 owner: account.address,
                 coinType: coinType,
@@ -391,41 +392,31 @@ export const useBlockchain = () => {
             setUsername(null);
             return null;
         }
-
-        try {
-            setIsLoadingUsername(true);
-
-            // Query the username registry
-            const registryObject = await client.getObject({
-                id: CONTRACT_CONFIG.usernameRegistryId,
-                options: { showContent: true },
+        const tx = new Transaction();
+            tx.moveCall({
+                target: `${CONTRACT_CONFIG.packageId}::game::get_username`,
+                arguments: [
+                    tx.object(CONTRACT_CONFIG.usernameRegistryId),
+                    tx.pure.address(account.address),
+                ],
             });
 
-            const fields = registryObject.data?.content?.fields;
-            const usernamesTable = fields?.usernames;
-
-            if (!usernamesTable) {
-                console.log('No usernames table found');
+            const result = await client.devInspectTransactionBlock({
+                transactionBlock: tx,
+                sender: account.address,
+            });
+            const returnValues = result.results?.[0]?.returnValues;
+            if (returnValues?.length) {
+                const [bytes] = returnValues[0];
+                const username = new TextDecoder().decode(
+                    Uint8Array.from(bytes),
+                );
+                console.log('✅ Username loaded from blockchain:', username);
+                setUsername(username || null);
+            } else {
                 setUsername(null);
-                setIsLoadingUsername(false);
-                return null;
             }
-
-            // TODO: Query the table for the user's address
-            // This is a placeholder - actual implementation depends on how the table is structured
-            // For now, we'll return null and implement this when the smart contract is deployed
-            
-            console.log('Username lookup not yet implemented');
-            setUsername(null);
             setIsLoadingUsername(false);
-            return null;
-
-        } catch (error) {
-            console.error('Error fetching username:', error);
-            setUsername(null);
-            setIsLoadingUsername(false);
-            return null;
-        }
     }, [account, client]);
 
     /**
@@ -462,7 +453,7 @@ export const useBlockchain = () => {
             // Try to register on blockchain (will fail if module not deployed)
             const tx = new Transaction();
             tx.setSender(account.address);
-            
+
             tx.moveCall({
                 target: `${CONTRACT_CONFIG.packageId}::${CONTRACT_CONFIG.moduleName}::register_username`,
                 arguments: [
@@ -474,7 +465,7 @@ export const useBlockchain = () => {
             tx.setGasBudget(TX_CONFIG.submitScoreGasBudget);
 
             signAndExecuteTransaction(
-                { 
+                {
                     transaction: tx,
                 },
                 {
@@ -526,7 +517,7 @@ export const useBlockchain = () => {
 
             const tx = new Transaction();
             tx.setSender(account.address);
-            
+
             // Convert colors object to array of strings in correct order (1-7)
             const colorsArray = [
                 skinColors[1], // I piece
@@ -537,7 +528,7 @@ export const useBlockchain = () => {
                 skinColors[6], // J piece
                 skinColors[7], // L piece
             ];
-            
+
             tx.moveCall({
                 target: `${CONTRACT_CONFIG.packageId}::${CONTRACT_CONFIG.moduleName}::mint_skin`,
                 arguments: [
@@ -551,21 +542,21 @@ export const useBlockchain = () => {
             tx.setGasBudget(TX_CONFIG.submitScoreGasBudget);
 
             signAndExecuteTransaction(
-                { 
+                {
                     transaction: tx,
                 },
                 {
                     onSuccess: async (result) => {
                         try {
                             console.log('Skin NFT claimed successfully:', result);
-                            
+
                             // Mark skin as claimed in localStorage
                             const claimedSkins = JSON.parse(localStorage.getItem('claimedSkins') || '[]');
                             if (!claimedSkins.includes(skinId)) {
                                 claimedSkins.push(skinId);
                                 localStorage.setItem('claimedSkins', JSON.stringify(claimedSkins));
                             }
-                            
+
                             resolve({
                                 success: true,
                                 skinId,
