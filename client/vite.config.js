@@ -35,6 +35,9 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
   },
+  resolve: {
+    dedupe: ['react', 'react-dom'],
+  },
 });
 
 
