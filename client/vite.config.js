@@ -18,6 +18,8 @@ export default defineConfig({
     server: {
         port: 8080,
         open: true,
+        host: '0.0.0.0',
+        allowedHosts: 'all',
     },
     build: {
         outDir: 'dist',
