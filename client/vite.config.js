@@ -22,9 +22,9 @@ export default defineConfig({
     host: true,
     allowedHosts: 'all',
     hmr: {
-      host: 'onetetri.com',
-      protocol: 'ws',
-      overlay: false,
+      host: 'onetetri.onechainops.com',
+      protocol: 'wss',
+      overlay: true,
     },
   },
   build: {
