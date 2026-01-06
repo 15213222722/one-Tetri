@@ -144,6 +144,15 @@ function App() {
         }
     }, [authState, currentScreen, t]);
 
+    // Load leaderboard when entering menu screen
+    useEffect(() => {
+        if (currentScreen === 'menu' && blockchain.account) {
+            blockchain.fetchLeaderboard().catch(err => {
+                console.error('Failed to load leaderboard:', err);
+            });
+        }
+    }, [currentScreen, blockchain.account]);
+
     // Handle successful username registration
     const handleUsernameRegistered = () => {
         setAuthState(AUTH_STATES.AUTHENTICATED);
