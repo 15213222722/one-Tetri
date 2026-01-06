@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
+console.log('VITE CONFIG LOADED');
 const healthCheckMiddleware = () => ({
   name: 'health-check',
   configureServer(server) {
@@ -13,20 +14,27 @@ const healthCheckMiddleware = () => ({
 });
 
 export default defineConfig({
-    plugins: [react(), healthCheckMiddleware()],
-    root: '.',
-    server: {
-        port: 8080,
-        open: true,
-        host: '0.0.0.0',
-        allowedHosts: 'all',
+  plugins: [react(), healthCheckMiddleware()],
+  root: '.',
+  server: {
+    port: 8080,
+    open: false,
+    host: true,
+    allowedHosts: 'all',
+    hmr: {
+      host: 'onetetri.onechainops.com',
+      protocol: 'wss',
+      overlay: false,
     },
-    build: {
-        outDir: 'dist',
-        sourcemap: true,
-    },
-    test: {
-        globals: true,
-        environment: 'jsdom',
-    },
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+  },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+  },
 });
+
+
