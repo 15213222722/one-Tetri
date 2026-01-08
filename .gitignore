@@ -21,7 +21,7 @@ Thumbs.db
 .sui/
 
 # Environment
-.env
+# .env
 .env.local
 
 # Logs
